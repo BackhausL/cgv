@@ -277,6 +277,9 @@ GLContext fltk::create_gl_context(XVisualInfo* vis) {
     printf("C\n");
   } else
 #endif
+  /* The following 3.3 Core context creation works well, but is currently unusable anyway
+     because there is way too much legacy GL stuff literally everywhere in the framework
+
   glxewInit();
   glXCreateContextAttribsARB = (PFNGLXCREATECONTEXTATTRIBSARBPROC)
     glXGetProcAddress((const GLubyte*)"glXCreateContextAttribsARB");
@@ -334,7 +337,7 @@ GLContext fltk::create_gl_context(XVisualInfo* vis) {
     None
   };
   context = glXCreateContextAttribsARB(xdisplay, bestFbc, 0, true, context_attribs);
-  if (!context)
+  if (!context)*/
     context = glXCreateContext(xdisplay, vis, first_context, 1);
 #if DESTROY_ON_EXIT
   Contexts* p = new Contexts;
