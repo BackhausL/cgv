@@ -46,7 +46,7 @@ protected:
 
 	// reduction to subset 
 	unsigned show_point_step;
-	std::size_t show_point_begin, show_point_end;
+	long long show_point_begin, show_point_end;
 	unsigned nr_draw_calls;
 	cgv::render::view* view_ptr;
 	bool ensure_view_pointer();
