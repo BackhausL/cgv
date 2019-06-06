@@ -323,7 +323,7 @@ bool surface_reconstructor::read_vrml_1(const std::string& file_name, point_clou
 /// write in ply format
 bool surface_reconstructor::write_ply(const std::string& file_name, const std::vector<unsigned int>& T) const
 {
-	ply_writer<Crd> pw;
+	ply_writer pw;
 	if (!pw.open(file_name, (unsigned int) pc->get_nr_points(), (unsigned int) T.size()/3, true, pc->has_colors()))
 		return false;
 	unsigned int n = (unsigned int) pc->get_nr_points();

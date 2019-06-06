@@ -52,14 +52,11 @@ static PlyProperty face_props[] = { /* list of property information for a face *
 
 static char* propNames[] = { "vertex", "face" };
 
-template <typename T>
-typename ply_writer<T>::Nml ply_writer<T>::dummy_normal(0,0,1);
+typename ply_writer::Nml ply_writer::dummy_normal(0,0,1);
 
-template <typename T>
-typename ply_writer<T>::Clr ply_writer<T>::dummy_color(0,0,0,255);
+typename ply_writer::Clr ply_writer::dummy_color(0,0,0,255);
 
-template <typename T>
-ply_writer<T>::ply_writer()
+ply_writer::ply_writer()
 {
 	ply_file = 0;
 	write_mode = WM_NONE;
@@ -73,29 +70,28 @@ int to_ply_format(PlyFileFormat format)
 	return ply_formats[format];
 }
 
-template <typename T>
-bool ply_writer<T>::open(const std::string& file_name, 
-								 unsigned int nr_vertices, unsigned int nr_faces, 
-								 bool vertex_normals, bool vertex_colors, PlyFileFormat format)
+bool ply_writer::open(const std::string& file_name, 
+                      unsigned int nr_vertices, unsigned int nr_faces, 
+                      bool vertex_normals, bool vertex_colors, PlyFileFormat format)
 {
 	PlyFile* ply_out = open_ply_for_write(file_name.c_str(), 2, propNames, format);
 	if (!ply_out) return 0;
 	describe_element_ply  (ply_out, "vertex", nr_vertices);
-	describe_property_ply (ply_out, &construct_vertex_properties<T>()[0]);
-	describe_property_ply (ply_out, &construct_vertex_properties<T>()[1]);
-	describe_property_ply (ply_out, &construct_vertex_properties<T>()[2]);
+	describe_property_ply (ply_out, &construct_vertex_properties<coord_type>()[0]);
+	describe_property_ply (ply_out, &construct_vertex_properties<coord_type>()[1]);
+	describe_property_ply (ply_out, &construct_vertex_properties<coord_type>()[2]);
 	have_vertex_normals = vertex_normals;
 	have_vertex_colors = vertex_colors;
 	if (vertex_normals) {
-		describe_property_ply (ply_out, &construct_vertex_properties<T>()[3]);
-		describe_property_ply (ply_out, &construct_vertex_properties<T>()[4]);
-		describe_property_ply (ply_out, &construct_vertex_properties<T>()[5]);
+		describe_property_ply (ply_out, &construct_vertex_properties<coord_type>()[3]);
+		describe_property_ply (ply_out, &construct_vertex_properties<coord_type>()[4]);
+		describe_property_ply (ply_out, &construct_vertex_properties<coord_type>()[5]);
 	}
 	if (vertex_colors) {
-		describe_property_ply (ply_out, &construct_vertex_properties<T>()[6]);
-		describe_property_ply (ply_out, &construct_vertex_properties<T>()[7]);
-		describe_property_ply (ply_out, &construct_vertex_properties<T>()[8]);
-		describe_property_ply (ply_out, &construct_vertex_properties<T>()[9]);
+		describe_property_ply (ply_out, &construct_vertex_properties<coord_type>()[6]);
+		describe_property_ply (ply_out, &construct_vertex_properties<coord_type>()[7]);
+		describe_property_ply (ply_out, &construct_vertex_properties<coord_type>()[8]);
+		describe_property_ply (ply_out, &construct_vertex_properties<coord_type>()[9]);
 	}
 	describe_element_ply  (ply_out, "face", nr_faces);
 	describe_property_ply (ply_out, &face_props[0]);
@@ -105,8 +101,7 @@ bool ply_writer<T>::open(const std::string& file_name,
 }
 
 /// write one vertex
-template <typename T>
-void ply_writer<T>::write_vertex(const Pnt& pt, const Nml& nml, const Clr& clr)
+void ply_writer::write_vertex(const Pnt& pt, const Nml& nml, const Clr& clr)
 {
 	PlyFile* ply_out = static_cast<PlyFile*>(ply_file);
 	if (!ply_out)
@@ -115,7 +110,7 @@ void ply_writer<T>::write_vertex(const Pnt& pt, const Nml& nml, const Clr& clr)
 		put_element_setup_ply (ply_out, "vertex");
 		write_mode = WM_VERTEX;
 	}
-	PlyVertex<T> pv;
+	PlyVertex<coord_type> pv;
 	pv.x = pt[0];
 	pv.y = pt[1];
 	pv.z = pt[2];
@@ -134,8 +129,7 @@ void ply_writer<T>::write_vertex(const Pnt& pt, const Nml& nml, const Clr& clr)
 }
 
 /// write a triangle given by its three vertex indices
-template <typename T>
-void ply_writer<T>::write_triangle(int* vis)
+void ply_writer::write_triangle(int* vis)
 {
 	PlyFile* ply_out = static_cast<PlyFile*>(ply_file);
 	if (!ply_out)
@@ -151,8 +145,7 @@ void ply_writer<T>::write_triangle(int* vis)
 }
 
 /// write a polygon given by its degree and the vertex indices
-template <typename T>
-void ply_writer<T>::write_polygon(unsigned char degree, int* vis)
+void ply_writer::write_polygon(unsigned char degree, int* vis)
 {
 	PlyFile* ply_out = static_cast<PlyFile*>(ply_file);
 	if (!ply_out)
@@ -167,8 +160,7 @@ void ply_writer<T>::write_polygon(unsigned char degree, int* vis)
 	put_element_ply(ply_out, (void *)&pf);
 }
 
-template <typename T>
-void ply_writer<T>::close()
+void ply_writer::close()
 {
 	PlyFile* ply_out = static_cast<PlyFile*>(ply_file);
 	if (!ply_out)
@@ -178,7 +170,7 @@ void ply_writer<T>::close()
 	ply_file = 0;
 }
 
-#if (!defined _PLY_WRITER__MSC_TEMPLATES_DEFINED)
+/*#if (!defined _PLY_WRITER__MSC_TEMPLATES_DEFINED)
 	template<> class ply_writer<float>;
 	template<> class ply_writer<double>;
-#endif
+#endif*/

@@ -13,11 +13,10 @@ enum PlyFileFormat {
 	PFF_BINARY_LITTLE_ENDIAN 
 };
 
-template <typename ta_coord_type>
 class ply_writer
 {
 public:
-	typedef ta_coord_type coord_type;
+	typedef double coord_type;
 	typedef cgv::math::fvec<coord_type,3> Pnt;
 	typedef cgv::math::fvec<coord_type,3> Nml;
 	typedef cgv::media::color<unsigned char,cgv::media::RGB,cgv::media::OPACITY> Clr;
@@ -51,7 +50,7 @@ public:
 	void write_polygon(unsigned char degree, int* vis);
 };
 
-#if _MSC_VER > 1400
+/*#if _MSC_VER > 1400
 #pragma warning(disable:4275)
 #pragma warning(disable:4231)
 #pragma warning(disable:4251)
@@ -65,6 +64,6 @@ CGV_TEMPLATE template class CGV_API ply_writer<int>;
 CGV_TEMPLATE template class CGV_API ply_writer<float>;
 CGV_TEMPLATE template class CGV_API ply_writer<double>;
 #define _PLY_WRITER__MSC_TEMPLATES_DEFINED 1
-#endif
+#endif*/
 
 #include <cgv/config/lib_end.h>
