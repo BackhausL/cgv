@@ -41,15 +41,6 @@ _cgv_set_definitions(vr_emulator
 	SHARED  ${GLEW_SHARED_DEFINITIONS} VR_EMULATOR_EXPORTS
 	STATIC ${GLEW_STATIC_DEFINITIONS}
 )
-
-# FIXME: For unicode support the definitions _UNICODE and UNICODE have to be
-# set. Can we do this better?
-# cgv_add_library(vr_emulator 
-# 	SOURCES ${SOURCES} 
-# 	PUBLIC_HEADERS ${HEADERS}
-# 	DEFINITIONS UNICODE _UNICODE
-# 	SHARED_DEFINITIONS  ${GLEW_SHARED_DEFINITIONS}
-# 	STATIC_DEFINITIONS ${GLEW_STATIC_DEFINITIONS})
 	
 target_link_libraries(vr_emulator ${cgv_LIBRARIES} ${glsu_LIBRARIES} ${cgv_gl_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${vr_LIBRARIES})
 

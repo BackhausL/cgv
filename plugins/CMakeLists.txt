@@ -20,9 +20,9 @@ add_subdirectory(vr_test)
 add_custom_target(plugins)
 
 if(BUILD_EXAMPLE_PLUGIN)
-	add_dependencies(plugins cg_fltk crg_grid crg_stereo_view cmi_io cg_icons cg_ext crg_light openvr_driver crg_vr_view examples)
+	add_dependencies(plugins cg_fltk crg_grid crg_stereo_view cmi_io cg_icons cg_ext crg_light openvr_driver crg_vr_view vr_test examples)
 else()
-	add_dependencies(plugins cg_fltk crg_grid crg_stereo_view cmi_io cg_icons cg_ext crg_light openvr_driver crg_vr_view)
+	add_dependencies(plugins cg_fltk crg_grid crg_stereo_view cmi_io cg_icons cg_ext crg_light openvr_driver crg_vr_view vr_test)
 endif()
 
 set_target_properties(plugins PROPERTIES FOLDER "${FOLDER_NAME_TOPLEVEL}")

@@ -28,8 +28,8 @@ file(GLOB_RECURSE HEADERS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "*.h")
 
 
 include_directories(
-	"${CGV_DIR}/libs"
 	${CMAKE_CURRENT_SOURCE_DIR} # source directory
+	${CGV_DIR}/libs
 	${cgv_INCLUDE_DIRS}
 	${glsu_INCLUDE_DIRS}
 	${cgv_gl_INCLUDE_DIRS}
@@ -68,6 +68,9 @@ target_link_libraries(crg_vr_view_lib
 	${cg_vr_LIBRARIES}
 	${crg_stereo_view_lib_LIBRARIES}
 )
+
+add_dependencies(crg_vr_view vr cg_vr crg_stereo_view_lib)
+add_dependencies(crg_vr_view_lib vr cg_vr crg_stereo_view_lib)
 
 cgv_write_find_file(crg_vr_view) 
 cgv_write_find_file(crg_vr_view_lib) 

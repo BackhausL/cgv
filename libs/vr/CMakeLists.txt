@@ -9,7 +9,7 @@ find_package(cgv COMPONENTS HINTS ${CGV_DIR})
 
 # -----------------------------------------------------------------------------
 ## 3rd party dependencies ##
-cgv_find_package(GLEW)
+cgv_find_package(GLEW REQUIRED)
 cgv_find_package(OpenGL REQUIRED)
 
 # -----------------------------------------------------------------------------
@@ -19,10 +19,9 @@ file(GLOB_RECURSE SOURCES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "*.cxx")
 file(GLOB_RECURSE HEADERS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "*.h")
 
 include_directories(
-	${cgv_INCLUDE_DIRS}
+	${CMAKE_CURRENT_SOURCE_DIR}
 	${GLEW_INCLUDE_PATH}
-	${OPENGL_INCLUDE_DIR} 	
-	"${CGV_DIR}/libs"
+	${OPENGL_INCLUDE_DIR}
 	)
 
 # FIXME: For unicode support the definitions _UNICODE and UNICODE have to be

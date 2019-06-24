@@ -19,10 +19,10 @@ file(GLOB_RECURSE HEADERS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "*.h")
 
 include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}
+	${CGV_DIR}/libs
 	${cgv_INCLUDE_DIRS}
 	${cgv_reflect_types_INCLUDE_DIRS}
 	${gamepad_INCLUDE_DIRS}
-	"${CGV_DIR}/libs"
 )
 
 # FIXME: For unicode support the definitions _UNICODE and UNICODE have to be

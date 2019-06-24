@@ -9,7 +9,7 @@ find_package(cgv COMPONENTS HINTS ${CGV_DIR})
 
 # -----------------------------------------------------------------------------
 ## Dependency Xinput##
-cgv_find_package(X11 REQUIRED COMPONENTS Xinput)
+cgv_find_package(X11 REQUIRED)
 
 # -----------------------------------------------------------------------------
 # Source files
@@ -19,8 +19,7 @@ file(GLOB_RECURSE HEADERS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "*.h")
 
 include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}
-	"${CGV_DIR}/libs"
-	${X11_INCLUDE_DIRS}
+	${X11_INCLUDE_DIR}
 )
 
 # FIXME: For unicode support the definitions _UNICODE and UNICODE have to be
