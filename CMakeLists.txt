@@ -20,6 +20,11 @@ add_subdirectory(apps)
 # Add plugins
 add_subdirectory(plugins)
 
+# Add VR Emulator
+add_subdirectory(test/vr)
+# The VR Emulator depend on the CGV framework and 3rd party libs
+add_dependencies(vr_emulator cgv 3rd)
+
 # The framework depends on the tools and on 3rd libraries
 add_dependencies(cgv tools 3rd)
 # The tools depend on the 3rd libraries
