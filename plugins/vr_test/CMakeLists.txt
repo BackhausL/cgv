@@ -7,12 +7,28 @@ project(vr_test)
 find_package(cgv 
 	COMPONENTS utils type data base math media gui render
 	HINTS ${CGV_DIR}
-)
+	)
+# -----------------------------------------------------------------------------
+## Main Application ##
+find_package(cgv_viewer)
+
+# Find 3rd party dependencies
+find_package(GLEW REQUIRED)
+find_package(OpenGL REQUIRED)
+
+# In Windows FLTK2 is not needed
+if (NOT WIN32)
+	find_package(FLTK2 REQUIRED)
+	cgv_find_package(X11)
+else()
+	set(FLTK2_LIBRARIES "")
+endif()
 
 # -----------------------------------------------------------------------------
 ## Dependencies from CGV Framework ##
 # Libraries
 cgv_find_package(cgv_gl)
+cgv_find_package(glsu)
 
 # VR
 cgv_find_package(vr)
@@ -28,7 +44,7 @@ cgv_find_package(cmi_io)
 cgv_find_package(cg_fltk)
 cgv_find_package(crg_grid)
 cgv_find_package(cg_ext)
-cgv_find_package(crg_vr_view_lib)
+cgv_find_package(crg_vr_view)
 cgv_find_package(openvr_driver)
 
 set(PLUGINS
@@ -36,7 +52,7 @@ set(PLUGINS
     cg_fltk
 	crg_grid
 	cg_ext
-	crg_vr_view_lib
+	crg_vr_view
 	vr_emulator
 	openvr_driver
 )
@@ -46,14 +62,20 @@ set(PLUGINS
 set(SOURCES
 	vr_test.cxx)
 
-file( GLOB_RECURSE SHADERS RELATIVE "${CGV_DIR}/libs/cgv_gl/glsl/" "*.gl*")
+file( GLOB_RECURSE SHADERS RELATIVE "${CGV_DIR}/libs/cgv_gl/glsl/" "shader/*.gl*")
 
 include_directories(
 	# source directory
 	${CMAKE_SOURCE_DIR}
+	# 3rd party libraries
+	${GLEW_INCLUDE_DIRS}
+	${OPENGL_INCLUDE_DIR}
+	${FLTK2_INCLUDE_DIRS}
+	${X11_INCLUDE_DIR}
 	# CGV framework Components
 	${cgv_INCLUDE_DIRS} # all <cgv/...>
 	${cgv_gl_INCLUDE_DIRS} # e.g. <cgv_gl/gl/mesh_render_info.h>
+	${glsu_INCLUDE_DIRS}
 	# gamepad
 	${gamepad_INCLUDE_DIRS} # e.g. <gamepad/gamepad.h>
 	${cg_gamepad_INCLUDE_DIRS} # e.g. <cg_gamepad/gamepad_server.h>
@@ -61,7 +83,7 @@ include_directories(
 	${vr_INCLUDE_DIRS} # e.g. <vr/vr_driver.h>
 	${cg_vr_INCLUDE_DIRS} # e.g. <cg_vr/vr_server.h>
 	# vr_view_interactor
-	${crg_vr_view_lib_INCLUDE_DIRS} # e.g. <vr_view_interactor.h>
+	${crg_vr_view_INCLUDE_DIRS} # e.g. <vr_view_interactor.h>
 )
 
 cgv_add_module(vr_test 
@@ -70,28 +92,37 @@ cgv_add_module(vr_test
 )
 
 target_link_libraries(vr_test 
-	# CGV framework Components
+	${GLEW_LIBRARIES}
+	${OPENGL_LIBRARIES}
+	${FLTK2_LIBRARIES}
+	${X11_LIBRARIES}
+
 	${cgv_LIBRARIES}
 	${cgv_gl_LIBRARIES} 
-	# gamepad
+	${glsu_LIBRARIES} 
+
 	${gamepad_LIBRARIES}
 	${cg_gamepad_LIBRARIES}
-	# vr
+
 	${vr_LIBRARIES}
 	${cg_vr_LIBRARIES}
-	# vr_view_interactor
-	${crg_vr_view_lib_LIBRARIES}
+
+	${crg_vr_view_LIBRARIES}
 )
+
+_cgv_set_definitions(vr_test
+	COMMON CGV_FORCE_STATIC
+	STATIC ${GLEW_STATIC_DEFINITIONS})
 
 # set export definitions
 cgv_add_export_definitions(vr_test VR_TEST_EXPORTS)
 
-# If building on Windows - add config for visual studio
-if (WIN32)
+# Add config for Visual Studio
+if (MSVC)
 	cgv_get_viewer_locations(VIEWER_EXE VIEWER_DEBUG_EXE)
-	set_target_properties(vr_test PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS "plugin:cmi_io plugin:cg_fltk type(shader_config):shader_path='${CGV_DIR}/libs/cgv_gl/glsl' plugin:crg_grid plugin:cg_ext plugin:crg_vr_view_lib plugin:vr_emulator plugin:openvr_driver plugin:vr_test")
+	set_target_properties(vr_test PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS "plugin:cg_fltk plugin:crg_grid plugin:crg_stereo_view plugin:crg_vr_view plugin:openvr_driver plugin:cmi_io plugin:cg_ext plugin:vr plugin:cg_vr plugin:gamepad plugin:cg_gamepad plugin:vr_emulator plugin:vr_test type(shader_config):shader_path='${CGV_DIR}/libs/cgv_gl/glsl'")
 	set_target_properties(vr_test PROPERTIES VS_DEBUGGER_COMMAND $<IF:$<CONFIG:Debug>,${VIEWER_DEBUG_EXE},${VIEWER_EXE}>)
+	set_target_properties(vr_test PROPERTIES FOLDER "${FOLDER_NAME_APPLICATION_PLUGINS}")
 endif()
 
 cgv_write_find_file(vr_test)
-

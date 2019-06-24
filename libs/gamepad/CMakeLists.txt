@@ -8,8 +8,13 @@ project(gamepad)
 find_package(cgv COMPONENTS HINTS ${CGV_DIR})
 
 # -----------------------------------------------------------------------------
-## Dependency Xinput##
-cgv_find_package(X11 REQUIRED)
+## Dependency XInput (win32) / Xinput (*nix)##
+if(WIN32)
+	set(GAMEPAD_LIBS "XInput")
+else()
+	cgv_find_package(X11 REQUIRED COMPONENTS Xinput)
+	set(GAMEPAD_LIBS ${X11_LIBRARIES})
+endif()
 
 # -----------------------------------------------------------------------------
 # Source files
@@ -19,7 +24,8 @@ file(GLOB_RECURSE HEADERS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "*.h")
 
 include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}
-	${X11_INCLUDE_DIR}
+	"${CGV_DIR}/libs"
+	${X11_INCLUDE_DIRS}
 )
 
 # FIXME: For unicode support the definitions _UNICODE and UNICODE have to be
@@ -30,7 +36,6 @@ cgv_add_library(gamepad
 	DEFINITIONS UNICODE _UNICODE
 	SHARED_DEFINITIONS GAMEPAD_EXPORTS)
 
-target_link_libraries(gamepad  ${X11_LIBRARIES} )
+target_link_libraries(gamepad ${GAMEPAD_LIBS})
 
 cgv_write_find_file(gamepad)
-

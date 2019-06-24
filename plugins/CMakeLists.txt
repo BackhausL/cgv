@@ -13,19 +13,22 @@ if(BUILD_EXAMPLE_PLUGIN)
 	add_subdirectory(examples)
 endif()
 
-add_subdirectory(crg_vr_view)
-add_subdirectory(openvr_driver)
-add_subdirectory(vr_test)
- 
+if(BUILD_VR_SUPPORT)
+	add_subdirectory(openvr_driver)
+	add_subdirectory(crg_vr_view)
+	add_subdirectory(vr_test)
+endif()
+
 add_custom_target(plugins)
 
-if(BUILD_EXAMPLE_PLUGIN)
-	add_dependencies(plugins cg_fltk crg_grid crg_stereo_view cmi_io cg_icons cg_ext crg_light openvr_driver crg_vr_view vr_test examples)
-else()
+if(BUILD_EXAMPLE_PLUGIN AND BUILD_VR_SUPPORT)
+	add_dependencies(plugins cg_fltk crg_grid crg_stereo_view cmi_io cg_icons cg_ext crg_light examples openvr_driver crg_vr_view vr_test)
+elseif(BUILD_EXAMPLE_PLUGIN)
+	add_dependencies(plugins cg_fltk crg_grid crg_stereo_view cmi_io cg_icons cg_ext crg_light examples)
+elseif(BUILD_VR_SUPPORT)
 	add_dependencies(plugins cg_fltk crg_grid crg_stereo_view cmi_io cg_icons cg_ext crg_light openvr_driver crg_vr_view vr_test)
+else()
+	add_dependencies(plugins cg_fltk crg_grid crg_stereo_view cmi_io cg_icons cg_ext crg_light)
 endif()
 
 set_target_properties(plugins PROPERTIES FOLDER "${FOLDER_NAME_TOPLEVEL}")
-
-
-

@@ -1,7 +1,7 @@
-#if defined(CGV_GUI_FORCE_STATIC)
+#if defined(CRG_VR_VIEW_STATIC)
 #	define CGV_FORCE_STATIC_LIB
 #endif
-#ifdef CGV_VR_VIEW_EXPORTS
+#ifdef CRG_VR_VIEW_EXPORTS
 #	define CGV_EXPORTS
 #endif
 

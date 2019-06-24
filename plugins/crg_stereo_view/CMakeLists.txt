@@ -27,20 +27,25 @@ cgv_add_module(crg_stereo_view ${SOURCES} ${HEADERS})
 
 cgv_add_export_definitions(crg_stereo_view CGV_RENDER_STEREO_VIEW)
 
-cgv_add_library(crg_stereo_view_lib 
-	SOURCES ${SOURCES}
-	PUBLIC_HEADERS ${HEADERS}
-	SHADERS ""
-	FILES ""
-	DEFINITIONS UNICODE _UNICODE
-	SHARED_DEFINITIONS CGV_RENDER_STEREO_VIEW_EXPORTS ${GLEW_SHARED_DEFINITIONS}
-	STATIC_DEFINITIONS NO_STEREO_VIEW_INTERACTOR ${GLEW_STATIC_DEFINITIONS}
-)
+if(WIN32)
+	cgv_add_library(crg_stereo_view_lib 
+		SOURCES ${SOURCES} 
+		PUBLIC_HEADERS ${HEADERS}
+		DEFINITIONS UNICODE _UNICODE
+		SHARED_DEFINITIONS CGV_RENDER_STEREO_VIEW_EXPORTS
+		STATIC_DEFINITIONS NO_STEREO_VIEW_INTERACTOR)
+else()
+	cgv_add_library(crg_stereo_view_lib 
+		SOURCES ${SOURCES} 
+		PUBLIC_HEADERS ${HEADERS}
+		SHARED_DEFINITIONS CGV_RENDER_STEREO_VIEW_EXPORTS
+		STATIC_DEFINITIONS NO_STEREO_VIEW_INTERACTOR)
+endif()
 
 target_link_libraries(crg_stereo_view  ${cgv_LIBRARIES} ${glsu_LIBRARIES} ${cgv_gl_LIBRARIES})
 target_link_libraries(crg_stereo_view_lib  ${cgv_LIBRARIES} ${glsu_LIBRARIES} ${cgv_gl_LIBRARIES})
 
 #set_target_properties(crg_stereo_view PROPERTIES FOLDER "${FOLDER_NAME_PLUGINS}")
 
-cgv_write_find_file(crg_stereo_view) 
-cgv_write_find_file(crg_stereo_view_lib) 
+cgv_write_find_file(crg_stereo_view)
+cgv_write_find_file(crg_stereo_view_lib)
