@@ -277,6 +277,67 @@ GLContext fltk::create_gl_context(XVisualInfo* vis) {
     printf("C\n");
   } else
 #endif
+  /* The following 3.3 Core context creation works well, but is currently unusable anyway
+     because there is way too much legacy GL stuff literally everywhere in the framework
+
+  glxewInit();
+  glXCreateContextAttribsARB = (PFNGLXCREATECONTEXTATTRIBSARBPROC)
+    glXGetProcAddress((const GLubyte*)"glXCreateContextAttribsARB");
+  static int visual_attribs[] =
+  {
+    GLX_X_RENDERABLE    , True,
+    GLX_DRAWABLE_TYPE   , GLX_WINDOW_BIT,
+    GLX_RENDER_TYPE     , GLX_RGBA_BIT,
+    GLX_X_VISUAL_TYPE   , GLX_TRUE_COLOR,
+    GLX_RED_SIZE        , 8,
+    GLX_GREEN_SIZE      , 8,
+    GLX_BLUE_SIZE       , 8,
+    GLX_ALPHA_SIZE      , 8,
+    GLX_DEPTH_SIZE      , 24,
+    GLX_STENCIL_SIZE    , 8,
+    GLX_DOUBLEBUFFER    , True,
+    //GLX_SAMPLE_BUFFERS  , 1,
+    //GLX_SAMPLES         , 4,
+    None
+  };
+  int fbcount;
+  _XPrivDisplay _disp = (_XPrivDisplay)xdisplay;
+  int ds = _disp->default_screen;
+  GLXFBConfig* fbc = glXChooseFBConfig(xdisplay, DefaultScreen(xdisplay), visual_attribs, &fbcount);
+  int best_fbc = -1, worst_fbc = -1, best_num_samp = -1, worst_num_samp = 999;
+  for (int i=0; i<fbcount; i++)
+  {
+    XVisualInfo *vi = glXGetVisualFromFBConfig( xdisplay, fbc[i] );
+    if ( vi )
+    {
+      int samp_buf, samples;
+      glXGetFBConfigAttrib( xdisplay, fbc[i], GLX_SAMPLE_BUFFERS, &samp_buf );
+      glXGetFBConfigAttrib( xdisplay, fbc[i], GLX_SAMPLES       , &samples  );
+      printf( "  Matching fbconfig %d, visual ID 0x%2x: SAMPLE_BUFFERS = %d,"
+              " SAMPLES = %d\n", 
+              i, (unsigned)vi->visualid, samp_buf, samples );
+
+      if ( best_fbc < 0 || samp_buf && samples > best_num_samp )
+        best_fbc = i, best_num_samp = samples;
+      if ( worst_fbc < 0 || !samp_buf || samples < worst_num_samp )
+        worst_fbc = i, worst_num_samp = samples;
+    }
+    XFree( vi );
+  }
+  GLXFBConfig bestFbc = fbc[ best_fbc ];
+  // Be sure to free the FBConfig list allocated by glXChooseFBConfig()
+  XFree( fbc );
+  XVisualInfo *vi = glXGetVisualFromFBConfig( xdisplay, bestFbc );
+  printf( "Chosen visual ID = 0x%x\n", (unsigned)vi->visualid );
+  int context_attribs[] = {
+    GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
+    GLX_CONTEXT_MINOR_VERSION_ARB, 3,
+    GLX_CONTEXT_FLAGS_ARB        , GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
+    GLX_CONTEXT_PROFILE_MASK_ARB , GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
+    None
+  };
+  context = glXCreateContextAttribsARB(xdisplay, bestFbc, 0, true, context_attribs);
+  if (!context)*/
     context = glXCreateContext(xdisplay, vis, first_context, 1);
 #if DESTROY_ON_EXIT
   Contexts* p = new Contexts;

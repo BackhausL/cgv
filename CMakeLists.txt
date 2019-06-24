@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 option(BUILD_SHARED_LIBS "Create shared libraries" TRUE)
 option(BUILD_EXAMPLE_PLUGIN "Build the example plugin" TRUE)
+option(BUILD_VR_SUPPORT "Build with VR support" FALSE)
 
 # Load general build settings
 include("cmake/buildSettings.cmake")
@@ -20,10 +21,8 @@ add_subdirectory(apps)
 # Add plugins
 add_subdirectory(plugins)
 
-# Add VR Emulator
-add_subdirectory(test/vr)
-# The VR Emulator depend on the CGV framework and 3rd party libs
-add_dependencies(vr_emulator cgv 3rd)
+# Add the tests
+add_subdirectory(test)
 
 # The framework depends on the tools and on 3rd libraries
 add_dependencies(cgv tools 3rd)

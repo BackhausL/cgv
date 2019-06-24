@@ -98,7 +98,7 @@ protected:
 	/**@name rendering speedup techniques */
 	//@{
 	/// allows to restrict rendering to a subrange of all points
-	std::size_t show_point_start, show_point_count;
+	long long show_point_start, show_point_count;
 	/// allows to subsample point rendering during interaction in order to speed up interaction
 	unsigned interact_point_step;
 	/// delay in seconds waited before interaction subsampling is turned off again
