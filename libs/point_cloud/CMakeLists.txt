@@ -3,7 +3,7 @@ project(point_cloud)
 
 # The CGV framework is needed
 find_package(cgv COMPONENTS utils type reflect data base media os gui render)
-find_package(cgv_gl)
+cgv_find_package(cgv_gl)
 
 # 3rd party libraries
 cgv_find_package(ANNf)
@@ -19,8 +19,10 @@ file(GLOB_RECURSE HEADERS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "*.h")
 file(GLOB_RECURSE SHADERS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "glsl/*.gl*")
 
 include_directories(
+	"${CMAKE_CURRENT_SOURCE_DIR}"
 	"${CGV_DIR}/libs"
 	"${cgv_INCLUDE_DIRS}"
+	"${ANNf_INCLUDE_DIRS}"
 	"${GLEW_INCLUDE_DIRS}"
 )
 

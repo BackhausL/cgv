@@ -16,4 +16,5 @@ addIncDirs=[
 	[INPUT_DIR, "all"],  
 	[ CGV_DIR."/libs/vr_kit", "all" ]
 ];
-addSharedDefines=["CGV_VR_VIEW_EXPORTS"];
+addSharedDefines=["CRG_VR_VIEW_EXPORTS"];
+addStaticDefines=["CRG_VR_VIEW_STATIC"];
