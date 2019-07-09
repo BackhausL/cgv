@@ -120,7 +120,7 @@ cgv_add_export_definitions(vr_test VR_TEST_EXPORTS)
 # Add config for Visual Studio
 if (MSVC)
 	cgv_get_viewer_locations(VIEWER_EXE VIEWER_DEBUG_EXE)
-	set_target_properties(vr_test PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS "plugin:cg_fltk plugin:crg_grid plugin:crg_stereo_view plugin:crg_vr_view plugin:openvr_driver plugin:cmi_io plugin:cg_ext plugin:vr plugin:cg_vr plugin:gamepad plugin:cg_gamepad plugin:vr_emulator plugin:vr_test type(shader_config):shader_path='${CGV_DIR}/libs/cgv_gl/glsl'")
+	set_target_properties(vr_test PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS "plugin:cg_fltk type(shader_config):shader_path='${CGV_DIR}/libs/cgv_gl/glsl' plugin:crg_grid plugin:crg_stereo_view plugin:crg_vr_view plugin:openvr_driver plugin:cmi_io plugin:cg_ext plugin:vr plugin:cg_vr plugin:gamepad plugin:cg_gamepad plugin:vr_emulator plugin:vr_test")
 	set_target_properties(vr_test PROPERTIES VS_DEBUGGER_COMMAND $<IF:$<CONFIG:Debug>,${VIEWER_DEBUG_EXE},${VIEWER_EXE}>)
 	set_target_properties(vr_test PROPERTIES FOLDER "${FOLDER_NAME_APPLICATION_PLUGINS}")
 endif()
