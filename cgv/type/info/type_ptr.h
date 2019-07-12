@@ -65,6 +65,11 @@ struct type_ptr<TI_UINT32>
 	static uint32_type*       cast(void* ptr)       { return static_cast<uint32_type*>(ptr); }
 	static const uint32_type* cast(const void* ptr) { return static_cast<const uint32_type*>(ptr); }
 };
+template <> struct type_ptr<TI_UINT32_REV>
+{
+	static uint32_type*		  cast(void *ptr)		{ return static_cast<uint32_type *>(ptr); }
+	static const uint32_type* cast(const void *ptr) { return static_cast<const uint32_type *>(ptr); }
+};
 template <>
 struct type_ptr<TI_UINT64>
 {

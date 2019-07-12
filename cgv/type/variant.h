@@ -38,6 +38,8 @@ struct variant
 			return (T) *static_cast<const uint16_type*>(value_ptr);
 		if (value_type == info::get_type_name(info::TI_UINT32))
 			return (T) *static_cast<const uint32_type*>(value_ptr);
+        if (value_type == info::get_type_name(info::TI_UINT32_REV))
+            return (T) * static_cast<const uint32_type*>(value_ptr);
 		if (value_type == info::get_type_name(info::TI_UINT64))
 			return (T) *static_cast<const uint64_type*>(value_ptr);
 		if (value_type == info::get_type_name(info::TI_FLT32))
@@ -71,6 +73,8 @@ struct variant
 			*static_cast<uint16_type*>(value_ptr) = (uint16_type) value;
 		else if (value_type == info::get_type_name(info::TI_UINT32))
 			*static_cast<uint32_type*>(value_ptr) = (uint32_type) value;
+        else if (value_type == info::get_type_name(info::TI_UINT32_REV))
+            *static_cast<uint32_type*>(value_ptr) = (uint32_type)value;
 		else if (value_type == info::get_type_name(info::TI_UINT64))
 			*static_cast<uint64_type*>(value_ptr) = (uint64_type) value;
 		else if (value_type == info::get_type_name(info::TI_FLT32))
@@ -107,6 +111,8 @@ struct variant<bool>
 			return *static_cast<const uint16_type*>(value_ptr) != 0;
 		if (value_type == info::get_type_name(info::TI_UINT32))
 			return *static_cast<const uint32_type*>(value_ptr) != 0;
+        if (value_type == info::get_type_name(info::TI_UINT32_REV))
+            return *static_cast<const uint32_type*>(value_ptr) != 0;
 		if (value_type == info::get_type_name(info::TI_UINT64))
 			return *static_cast<const uint64_type*>(value_ptr) != 0;
 		if (value_type == info::get_type_name(info::TI_FLT32))
@@ -139,6 +145,8 @@ struct variant<bool>
 			*static_cast<uint16_type*>(value_ptr) = value?1:0;
 		else if (value_type == info::get_type_name(info::TI_UINT32))
 			*static_cast<uint32_type*>(value_ptr) = value?1:0;
+        else if (value_type == info::get_type_name(info::TI_UINT32_REV))
+            *static_cast<uint32_type*>(value_ptr) = value ? 1 : 0;
 		else if (value_type == info::get_type_name(info::TI_UINT64))
 			*static_cast<uint64_type*>(value_ptr) = value?1:0;
 		else if (value_type == info::get_type_name(info::TI_FLT32))
@@ -176,6 +184,8 @@ struct variant<std::string>
 			return cgv::utils::to_string(*static_cast<const uint16_type*>(value_ptr));
 		if (value_type == info::get_type_name(info::TI_UINT32))
 			return cgv::utils::to_string(*static_cast<const uint32_type*>(value_ptr));
+        if (value_type == info::get_type_name(info::TI_UINT32_REV))
+            return cgv::utils::to_string(*static_cast<const uint32_type*>(value_ptr));
 		if (value_type == info::get_type_name(info::TI_UINT64))
 			return cgv::utils::to_string(*static_cast<const uint64_type*>(value_ptr));
 		if (value_type == info::get_type_name(info::TI_FLT32))
@@ -207,6 +217,8 @@ struct variant<std::string>
 		else if (value_type == info::get_type_name(info::TI_UINT16))
 			*static_cast<uint16_type*>(value_ptr) = (uint16_type) atoi(value.c_str());
 		else if (value_type == info::get_type_name(info::TI_UINT32))
+			*static_cast<uint32_type*>(value_ptr) = (uint32_type) atoi(value.c_str());
+        else if (value_type == info::get_type_name(info::TI_UINT32_REV))
 			*static_cast<uint32_type*>(value_ptr) = (uint32_type) atoi(value.c_str());
 		else if (value_type == info::get_type_name(info::TI_UINT64))
 			*static_cast<uint64_type*>(value_ptr) = (uint64_type) atoi(value.c_str());

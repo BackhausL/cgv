@@ -25,6 +25,7 @@ struct type_access
 		case TI_UINT8  : return(T)*static_cast<const uint8_type*>(ptr);
 		case TI_UINT16 : return(T)*static_cast<const uint16_type*>(ptr);
 		case TI_UINT32 : return(T)*static_cast<const uint32_type*>(ptr);
+        case TI_UINT32_REV : return (T)*static_cast<const uint32_type*>(ptr);
 		case TI_UINT64 : return(T)*static_cast<const uint64_type*>(ptr);
 		case TI_FLT32  : return(T)*static_cast<const flt32_type*>(ptr);
 		case TI_FLT64  : return(T)*static_cast<const flt64_type*>(ptr);
@@ -45,6 +46,7 @@ struct type_access
 		case TI_UINT8  : *static_cast<uint8_type*>(ptr) = (uint8_type) v; break;
 		case TI_UINT16 : *static_cast<uint16_type*>(ptr) = (uint16_type) v; break;
 		case TI_UINT32 : *static_cast<uint32_type*>(ptr) = (uint32_type) v; break;
+        case TI_UINT32_REV : *static_cast<uint32_type*>(ptr) = (uint32_type) v; break;
 		case TI_UINT64 : *static_cast<uint64_type*>(ptr) = (uint64_type) v; break;
 		case TI_FLT32  : *static_cast<flt32_type*>(ptr) = (flt32_type) v; break;
 		case TI_FLT64  : *static_cast<flt64_type*>(ptr) = (flt64_type) v; break;

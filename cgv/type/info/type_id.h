@@ -23,6 +23,7 @@ enum TypeId {
 	TI_UINT8, /// unsigned integer stored in 8 bits
 	TI_UINT16, /// unsigned integer stored in 16 bits
 	TI_UINT32, /// unsigned integer stored in 32 bits
+	TI_UINT32_REV, /// unsigned integer reversed in 32 bits
 	TI_UINT64, /// unsigned integer stored in 64 bits
 	TI_FLT16,  /// floating point type stored in 16 bits
 	TI_FLT32, /// floating point type stored in 32 bits
