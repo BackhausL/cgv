@@ -8,8 +8,7 @@
 namespace cgv {
 namespace render {
 // simple wrapper for drawable and placable in one
-class CGV_API drawable_and_placeable : public drawable, public placeable {
-	};
+class CGV_API drawable_and_placeable : public drawable, public placeable {};
 
 } // namespace render
 } // namespace cgv
