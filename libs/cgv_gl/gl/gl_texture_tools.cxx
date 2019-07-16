@@ -68,6 +68,7 @@ unsigned map_to_gl(TypeId ti)
 		GL_UNSIGNED_BYTE, /// unsigned integer stored in 8 bits
 		GL_UNSIGNED_SHORT, /// unsigned integer stored in 16 bits
 		GL_UNSIGNED_INT, /// unsigned integer stored in 32 bits
+		GL_UNSIGNED_INT_8_8_8_8_REV, /// unsigned integer reversed in 32 bits
 		0, /// unsigned integer stored in 64 bits
 		0,  /// floating point type stored in 16 bits
 		GL_FLOAT, /// floating point type stored in 32 bits
