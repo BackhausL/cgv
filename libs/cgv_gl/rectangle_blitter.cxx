@@ -41,10 +41,31 @@ void rectangle_blitter::draw(context &ctx) {
   if (!tex)
     return;
 
+  draw_impl(ctx, rect, *tex);
+}
+
+void rectangle_blitter::draw(context &ctx, const rectangle &rect,
+                             texture &texture) {
+  draw_impl(ctx, rect, texture);
+}
+
+void rectangle_blitter::draw_fullscreen(context &ctx) {
+  if (!tex)
+    return;
+
+  draw_fullscreen_impl(ctx, *tex);
+}
+
+void rectangle_blitter::draw_fullscreen(context &ctx, texture &texture) {
+  draw_fullscreen_impl(ctx, texture);
+}
+
+void rectangle_blitter::draw_impl(context &ctx, const rectangle &rectangle,
+                                  texture &texture) {
   vao.enable(ctx);
 
-  // TODO: check if order is right, probably not
-  std::vector<vec3> v = {rect[0], rect[1], rect[2], rect[3]};
+  std::vector<vec3> v = {rectangle[0], rectangle[1], rectangle[2],
+                         rectangle[3]};
   v_buf.replace(ctx, 0, v.data(), v.size());
   type_descriptor v_type(cgv::type::info::TI_FLT32, 3u, false);
   vao.set_attribute_array(ctx, 0, v_type, v_buf, 0u, 0u, 0u);
@@ -55,12 +76,12 @@ void rectangle_blitter::draw(context &ctx) {
   {
     ctx.mul_modelview_matrix(get_model_matrix());
     prog.enable(ctx);
-    tex->enable(ctx, 0);
+    texture.enable(ctx, 0);
 
     // attributeless rendering
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    tex->disable(ctx);
+    texture.disable(ctx);
     prog.disable(ctx);
   }
   ctx.pop_modelview_matrix();
@@ -68,14 +89,12 @@ void rectangle_blitter::draw(context &ctx) {
   vao.disable(ctx);
 }
 
-void rectangle_blitter::draw_fullscreen(context &ctx) {
-  if (!tex)
-    return;
+void rectangle_blitter::draw_fullscreen_impl(context &ctx, texture &texture) {
 
   vao.enable(ctx);
 
-  std::vector<vec3> v = {vec3(-1.0, 1.0, 0.0), vec3(-1.0, -1.0, 0.0),
-                         vec3(1.0, 1.0, 0.0), vec3(1.0, -1.0, 0.0)};
+  std::vector<vec3> v = {vec3(-1.0, 1.0, 0.0), vec3(1.0, 1.0, 0.0),
+                         vec3(-1.0, -1.0, 0.0), vec3(1.0, -1.0, 0.0)};
   v_buf.replace(ctx, 0, v.data(), v.size());
   type_descriptor v_type(cgv::type::info::TI_FLT32, 3u, false);
   vao.set_attribute_array(ctx, 0, v_type, v_buf, 0u, 0u, 0u);
@@ -83,11 +102,11 @@ void rectangle_blitter::draw_fullscreen(context &ctx) {
   prog.set_uniform(ctx, "fullscreen", true);
 
   prog.enable(ctx);
-  tex->enable(ctx, 0);
+  texture.enable(ctx, 0);
 
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-  tex->disable(ctx);
+  texture.disable(ctx);
   prog.disable(ctx);
 
   vao.disable(ctx);
