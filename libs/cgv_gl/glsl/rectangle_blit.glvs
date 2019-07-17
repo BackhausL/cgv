@@ -3,6 +3,8 @@
 layout(location = 0) in vec3 a_position;
 
 uniform bool fullscreen;
+uniform int draw_mode;
+uniform bool flipped;
 
 out vec2 uv;
 
@@ -16,11 +18,43 @@ mat3 get_normal_matrix();
 mat3 get_inverse_normal_matrix();
 //***** end interface of view.glsl ***********************************
 
-const vec2 uvs[4] =
+
+
+const vec2 uv_normal[4] =
     vec2[](vec2(0.0, 1.0), vec2(1.0, 1.0), vec2(0.0, 0.0), vec2(1.0, 0.0));
 
+const vec2 uv_upper_half[4] =
+    vec2[](vec2(0.1, 0.95), vec2(0.9, 0.95), vec2(0.1, 0.55), vec2(0.9, 0.55));
+const vec2 uv_lower_half[4] =
+    vec2[](vec2(0.1, 0.45), vec2(0.9, 0.45), vec2(0.1, 0.05), vec2(0.9, 0.05));
+
+const vec2 uv_left_half[4] =
+    vec2[](vec2(0.0, 1.0), vec2(0.5, 1.0), vec2(0.0, 0.0), vec2(0.5, 0.0));
+const vec2 uv_right_half[4] =
+    vec2[](vec2(0.5, 1.0), vec2(1.0, 1.0), vec2(0.5, 0.0), vec2(1.0, 0.0));
+
+
 void main() {
-  uv = uvs[gl_VertexID];
+	switch(draw_mode) {
+		case 0: 
+			uv = uv_normal[gl_VertexID]; break;
+		case 1: 
+			uv = uv_upper_half[gl_VertexID]; break;
+		case 2: 
+			uv = uv_lower_half[gl_VertexID]; break;
+		case 3: 
+			uv = uv_left_half[gl_VertexID]; break;
+		case 4: 
+			uv = uv_right_half[gl_VertexID]; break;
+		default:
+			uv = uv_normal[gl_VertexID]; break;
+	}
+
+	// TODO offset
+	uv.y += 0.02;
+
+	if(flipped)
+		uv.y = 1.0 - uv.y;
 
   if (fullscreen)
     gl_Position = vec4(a_position.xy, 0.0, 1.0);

@@ -11,9 +11,12 @@
 #include <vr/vr_kit.h>
 #include <vr/vr_driver.h>
 
+#include <plugins/openvr_driver/openvr_kit.h>
+#include <cgv_gl/rectangle_renderer.h>
+
 ///
 vr_view_interactor::vr_view_interactor(const char* name) : stereo_view_interactor(name),
-	fence_color1(0,0,1), fence_color2(1,1,0)
+fence_color1(0, 0, 1), fence_color2(1, 1, 0)
 {
 	debug_vr_events = false;
 	separate_view = true;
@@ -97,8 +100,8 @@ void vr_view_interactor::set_blit_vr_view_width(int width)
 /// return a pointer to the state of the current vr kit
 const vr::vr_kit_state* vr_view_interactor::get_current_vr_state() const
 {
-	if (current_vr_handle_index > 0 && current_vr_handle_index-1 < int(kit_states.size()))
-		return &kit_states[current_vr_handle_index-1];
+	if (current_vr_handle_index > 0 && current_vr_handle_index - 1 < int(kit_states.size()))
+		return &kit_states[current_vr_handle_index - 1];
 	return 0;
 }
 /// query the currently set event type flags
@@ -133,7 +136,7 @@ void vr_view_interactor::on_device_change(void* device_handle, bool attach)
 	post_redraw();
 	if (debug_vr_events)
 		std::cout << "on device change(" << device_handle << ","
-		<< (attach?"attach":"detach") << ")" << std::endl;
+		<< (attach ? "attach" : "detach") << ")" << std::endl;
 }
 
 /// return the type name 
@@ -190,6 +193,9 @@ bool vr_view_interactor::init(cgv::render::context& ctx)
 			on_set(&show_vr_kits_as_spheres);
 		}
 	}
+
+	rect.init(ctx);
+
 	return stereo_view_interactor::init(ctx);
 }
 
@@ -209,7 +215,7 @@ bool vr_view_interactor::handle(cgv::gui::event& e)
 	}
 	if (e.get_kind() == cgv::gui::EID_KEY) {
 		cgv::gui::key_event& ke = static_cast<cgv::gui::key_event&>(e);
-		if ((ke.get_action() == cgv::gui::KA_PRESS) && 
+		if ((ke.get_action() == cgv::gui::KA_PRESS) &&
 			(ke.get_modifiers() == cgv::gui::EM_CTRL)) {
 			if (ke.get_key() >= '0' && ke.get_key() < '4') {
 				unsigned player_index = ke.get_key() - '0';
@@ -255,7 +261,7 @@ void vr_view_interactor::after_finish(cgv::render::context& ctx)
 			rendered_kit_index = -1;
 		}
 		// blit vr kit views in main framebuffer
-		if (kits.size() > unsigned(separate_view?0:1) && blit_vr_views) {
+		if (kits.size() > unsigned(separate_view ? 0 : 1) && blit_vr_views) {
 			int y0 = 0;
 			for (auto handle : kits) {
 				if (!separate_view && handle == current_vr_handle)
@@ -267,7 +273,7 @@ void vr_view_interactor::after_finish(cgv::render::context& ctx)
 				int blit_height = blit_width * kit_ptr->get_height() / kit_ptr->get_width();
 				for (int eye = 0; eye < 2; ++eye) {
 					kit_ptr->blit_fbo(eye, x0, y0, blit_width, blit_height);
-					x0 += blit_width+5;
+					x0 += blit_width + 5;
 				}
 				y0 += blit_height + 5;
 				kit_ptr->submit_frame();
@@ -365,9 +371,12 @@ vr_view_interactor::dmat4 vr_view_interactor::hmat_from_pose(float pose_matrix[1
 	return M;
 }
 
+bool ONCE = true;
+
 /// this method is called in one pass over all drawables before the draw method
 void vr_view_interactor::init_frame(cgv::render::context& ctx)
 {
+
 	cgv::render::RenderPassFlags rpf = ctx.get_render_pass_flags();
 	if (ctx.get_render_pass() == cgv::render::RP_MAIN) {
 
@@ -381,6 +390,8 @@ void vr_view_interactor::init_frame(cgv::render::context& ctx)
 				if (current_kit_ptr) {
 					current_kit_ptr->query_state(kit_states[current_vr_handle_index - 1], 2);
 					cgv::gui::ref_vr_server().check_new_state(current_vr_handle, kit_states[current_vr_handle_index - 1], cgv::gui::trigger::get_current_time(), event_flags);
+
+
 				}
 			}
 			for (unsigned i = 0; i < kits.size(); ++i) {
@@ -409,11 +420,31 @@ void vr_view_interactor::init_frame(cgv::render::context& ctx)
 			rendered_kit_index = current_vr_handle_index - 1;
 			rendered_kit_ptr = vr::get_vr_kit(kits[rendered_kit_index]);
 			if (rendered_kit_ptr) {
+				vr::openvr_kit* ovr_kit = dynamic_cast<vr::openvr_kit*>(current_kit_ptr);
+				uint32_t tex_id = 0;
+				if (ovr_kit) {
+					if (ONCE) {
+						ovr_kit->start_cam();
+						ONCE = false;
+					}
+					tex_id = ovr_kit->refresh_cam();
+				}
 				for (rendered_eye = 0; rendered_eye < 2; ++rendered_eye) {
 					rendered_kit_ptr->enable_fbo(rendered_eye);
+
 					if (rendered_eye == 1 && !separate_view)
 						break;
 					ctx.render_pass(cgv::render::RP_USER_DEFINED, cgv::render::RenderPassFlags(rpf&~cgv::render::RPF_HANDLE_SCREEN_SHOT));
+					
+					rect.set_flipped(true);
+					if (rendered_eye == 0) {
+						rect.set_draw_mode(rectangle_renderer::draw_mode::UPPER_HALF);
+					}
+					else if (rendered_eye == 1) {
+						rect.set_draw_mode(rectangle_renderer::draw_mode::LOWER_HALF);
+					}
+					rect.draw_fullscreen(ctx, tex_id);
+					
 					rendered_kit_ptr->disable_fbo(rendered_eye);
 				}
 			}
@@ -631,6 +662,6 @@ bool vr_view_interactor::self_reflect(cgv::reflect::reflection_handler& srh)
 #include <cgv/base/register.h>
 
 /// register a newly created cube with the name "cube1" as constructor argument
-extern cgv::base::object_registration_1<vr_view_interactor,const char*> 
- obj1("vr interactor", "registration of vr interactor");
+extern cgv::base::object_registration_1<vr_view_interactor, const char*>
+obj1("vr interactor", "registration of vr interactor");
 

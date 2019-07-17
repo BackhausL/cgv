@@ -6,7 +6,9 @@
 #include <cgv_gl/box_renderer.h>
 #include <cgv_gl/sphere_renderer.h>
 #include <cgv_gl/gl/mesh_render_info.h>
+#include <cgv_gl/rectangle_renderer.h>
 #include <stereo_view_interactor.h>
+
 
 #include "lib_begin.h"
 
@@ -102,6 +104,7 @@ protected:
 	cgv::render::box_renderer br;
 	cgv::render::surface_render_style brs;
 	cgv::render::sphere_render_style srs;
+	cgv::render::rectangle_renderer rect;
 
 	//
 	void configure_kits();

@@ -16,6 +16,31 @@ namespace vr {
 	protected:
 		vr::IVRSystem* get_hmd();
 	public:
+		// TEST
+		vr::IVRTrackedCamera *m_pVRTrackedCamera;
+		vr::TrackedCameraHandle_t m_hTrackedCamera;
+		uint32_t m_nCameraFrameWidth;
+		uint32_t m_nCameraFrameHeight;
+		uint32_t m_nCameraFrameBufferSize;
+		uint8_t *m_pCameraFrameBuffer;
+		uint32_t m_nLastFrameSequence;
+		vr::CameraVideoStreamFrameHeader_t m_CurrentFrameHeader;
+
+		struct rgba8 {
+			unsigned char r;
+			unsigned char g;
+			unsigned char b;
+			unsigned char a;
+		};
+
+		std::vector<rgba8> raw;
+
+		bool init_cam();
+		bool start_cam();
+		bool stop_cam();
+		uint32_t refresh_cam();
+
+	public:
 		/// construct
 		openvr_kit(unsigned _width, unsigned _height, vr_driver* _driver, vr::IVRSystem* _hmd, const std::string& _name, bool _ffb_support, bool _wireless);
 		/// declare virtual destructor

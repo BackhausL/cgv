@@ -5,11 +5,12 @@ projectGUID="5EC8DA24-C288-4526-8EC7-FC9684466B5E";
 addProjectDeps=[
 	"cgv_type", "cgv_utils", "cgv_base", "cgv_data", "cgv_signal", "cgv_reflect", 
 	"cgv_render", "cgv_gui", "glsu", "cgv_gl", "crg_stereo_view_lib", "vr",
-	"cg_vr"];
+	"cg_vr", "openvr_driver"];
 addProjectDirs=[
 	CGV_DIR."/libs/glsu", 
 	CGV_DIR."/libs/cgv_gl", 
-	CGV_DIR."/plugins/crg_stereo_view"
+	CGV_DIR."/plugins/crg_stereo_view",
+	CGV_DIR."/plugins/openvr_driver"
 ];
 addIncDirs=[
 	CGV_DIR."/libs", 
@@ -18,3 +19,13 @@ addIncDirs=[
 ];
 addSharedDefines=["CRG_VR_VIEW_EXPORTS"];
 addStaticDefines=["CRG_VR_VIEW_STATIC"];
+
+if (SYSTEM=="windows") {
+	addDependencies=["openvr_api"];
+	if (CGV_PLATFORM=="WIN32") {
+		addLibDirs=[CGV_DIR."/plugins/openvr_driver/win32"];
+	}
+	else {
+		addLibDirs=[CGV_DIR."/plugins/openvr_driver/win64"];
+	}
+}
