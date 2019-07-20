@@ -1640,7 +1640,11 @@ bool gl_context::texture_set_state(const texture_base& tb) const
 	}
 	GLint tmp_id = texture_bind(tb.tt, tex_id);
 
-	glTexParameteri(get_tex_dim(tb.tt), GL_TEXTURE_MIN_FILTER, map_to_gl(tb.min_filter));
+	// TF_ANISOTROP is not a valid min filter, replace accordingly
+	if (tb.min_filter == TF_ANISOTROP)
+		glTexParameteri(get_tex_dim(tb.tt), GL_TEXTURE_MIN_FILTER,
+			tb.have_mipmaps ? map_to_gl(TF_LINEAR_MIPMAP_LINEAR) : map_to_gl(TF_LINEAR));
+	else glTexParameteri(get_tex_dim(tb.tt), GL_TEXTURE_MIN_FILTER, map_to_gl(tb.min_filter));
 	glTexParameteri(get_tex_dim(tb.tt), GL_TEXTURE_MAG_FILTER, map_to_gl(tb.mag_filter));
 	glTexParameteri(get_tex_dim(tb.tt), GL_TEXTURE_COMPARE_FUNC, map_to_gl(tb.compare_function));
 	glTexParameteri(get_tex_dim(tb.tt), GL_TEXTURE_COMPARE_MODE, (tb.use_compare_function ? GL_COMPARE_REF_TO_TEXTURE : GL_NONE));
