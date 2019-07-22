@@ -83,6 +83,7 @@ protected:
 	bool show_vr_kits_as_spheres;
 	bool show_vr_kits_as_meshes;
 	bool show_action_zone;
+	bool show_camera_seethrough;
 	rgb fence_color1, fence_color2;
 	float fence_frequency;
 	float fence_line_width;
@@ -105,6 +106,11 @@ protected:
 	cgv::render::surface_render_style brs;
 	cgv::render::sphere_render_style srs;
 	cgv::render::rectangle_renderer rect;
+
+	// textures
+	// in case of single camera store image only in left eye (unimplemented)
+	cgv::render::texture left_eye_camera_texture;
+	cgv::render::texture right_eye_camera_texture;
 
 	//
 	void configure_kits();
@@ -154,6 +160,8 @@ public:
 	int get_blit_vr_view_width() const { return blit_width; }
 	/// set the width with which vr views are blit
 	void set_blit_vr_view_width(int width);
+	/// toogle camera seethrough
+	void toogle_camera_seethrough();
 	//@}
 	/// 
 	void on_set(void* member_ptr);

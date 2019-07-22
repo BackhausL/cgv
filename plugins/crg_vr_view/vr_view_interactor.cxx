@@ -42,6 +42,11 @@ fence_color1(0, 0, 1), fence_color2(1, 1, 0)
 	srs.map_color_to_material = cgv::render::MS_FRONT_AND_BACK;
 	srs.blend_width_in_pixel = 0;
 
+	left_eye_camera_texture = texture(
+	"uint8[R,G,B,A]", TF_LINEAR, TF_LINEAR, TW_CLAMP_TO_EDGE, TW_CLAMP_TO_EDGE);
+	right_eye_camera_texture = texture(
+		"uint8[R,G,B,A]", TF_LINEAR, TF_LINEAR, TW_CLAMP_TO_EDGE, TW_CLAMP_TO_EDGE);
+
 	cgv::signal::connect(cgv::gui::ref_vr_server().on_device_change, this, &vr_view_interactor::on_device_change);
 	cgv::signal::connect(cgv::gui::ref_vr_server().on_status_change, this, &vr_view_interactor::on_status_change);
 }
@@ -94,6 +99,24 @@ void vr_view_interactor::set_blit_vr_view_width(int width)
 	if (blit_width != width) {
 		blit_width = width;
 		on_set(&blit_width);
+	}
+}
+
+void vr_view_interactor::toogle_camera_seethrough()
+{
+	if(!current_vr_handle) return;
+
+	vr::vr_kit* kit_ptr = vr::get_vr_kit(current_vr_handle);
+	auto cam = kit_ptr->get_camera();
+
+	if (cam) {
+		auto s = cam->get_state();
+		if (s == vr::camera_state::INITIALIZED /*|| s == vr::camera_state::ERROR*/) {
+			auto b = cam->start();
+		}
+		else if (s == vr::camera_state::STARTED) {
+			auto b = cam->stop();
+		}
 	}
 }
 
@@ -371,8 +394,6 @@ vr_view_interactor::dmat4 vr_view_interactor::hmat_from_pose(float pose_matrix[1
 	return M;
 }
 
-bool ONCE = true;
-
 /// this method is called in one pass over all drawables before the draw method
 void vr_view_interactor::init_frame(cgv::render::context& ctx)
 {
@@ -420,14 +441,73 @@ void vr_view_interactor::init_frame(cgv::render::context& ctx)
 			rendered_kit_index = current_vr_handle_index - 1;
 			rendered_kit_ptr = vr::get_vr_kit(kits[rendered_kit_index]);
 			if (rendered_kit_ptr) {
-				vr::openvr_kit* ovr_kit = dynamic_cast<vr::openvr_kit*>(current_kit_ptr);
-				uint32_t tex_id = 0;
-				if (ovr_kit) {
-					if (ONCE) {
-						ovr_kit->start_cam();
-						ONCE = false;
+				if (rendered_kit_ptr->has_camera()) {
+					auto cam = rendered_kit_ptr->get_camera();
+					auto qv = cam->query();
+
+					if (cam->is_new_frame_available()) {
+						auto data = cam->get_frame();
+
+						auto num_cams = cam->get_num_cameras();
+						num_cams = 2; // TODO: implement 1 and remove
+
+						if (num_cams == 1) {
+							data_format df;
+
+							switch (cam->get_frame_format()) {
+							case vr::camera_frame_format::RGBA:
+								df = data_format(cam->get_frame_width(), cam->get_frame_height(),
+									cgv::type::info::TI_UINT8, CF_RGBA);
+								break;
+							default:
+								df = data_format(cam->get_frame_width(), cam->get_frame_height(),
+									cgv::type::info::TI_UINT8, CF_RGBA);
+							}
+
+							// seems to only work on ref
+							// TODO: check this
+							auto dv = data_view(&df, cam->get_frame_ref().data());
+
+							// calls replace if already created - TODO: check this
+							left_eye_camera_texture.create(ctx,dv);
+						}
+						else if (num_cams == 2) {
+							data_format df1, df2;
+
+							switch (cam->get_frame_format()) {
+							case vr::camera_frame_format::RGBA: 
+							{
+								auto split = cam->get_frame_split();
+
+								if (split == vr::camera_frame_split::UP_DOWN) {
+									df1 = data_format(cam->get_frame_width(), cam->get_frame_height() / 2,
+										cgv::type::info::TI_UINT8, CF_RGBA);
+									df2 = df1;
+								}
+								else if (split == vr::camera_frame_split::LEFT_RIGHT) {
+									// TODO: line-wise copy
+									throw std::logic_error("vr camera left-right split not implemented");
+								}
+
+								// seems to only work on ref
+								// TODO: check this
+								auto dv = data_view(&df1, cam->get_frame_ref().data());
+								// calls replace if already created - TODO: check this
+								left_eye_camera_texture.create(ctx, dv);
+
+								auto data_ptr = cam->get_frame_ref().data() +
+									static_cast<int>(cam->get_frame_width() * (cam->get_frame_height() / 2));
+								dv = data_view(&df2, data_ptr);
+								right_eye_camera_texture.create(ctx, dv);
+
+								break;
+							}
+							default: {
+								throw std::logic_error("vr camera invalid frame format");
+							}
+							}
+						}
 					}
-					tex_id = ovr_kit->refresh_cam();
 				}
 				for (rendered_eye = 0; rendered_eye < 2; ++rendered_eye) {
 					rendered_kit_ptr->enable_fbo(rendered_eye);
@@ -436,14 +516,14 @@ void vr_view_interactor::init_frame(cgv::render::context& ctx)
 						break;
 					ctx.render_pass(cgv::render::RP_USER_DEFINED, cgv::render::RenderPassFlags(rpf&~cgv::render::RPF_HANDLE_SCREEN_SHOT));
 					
-					rect.set_flipped(true);
+					/*rect.set_flipped(true);
 					if (rendered_eye == 0) {
 						rect.set_draw_mode(rectangle_renderer::draw_mode::UPPER_HALF);
 					}
 					else if (rendered_eye == 1) {
 						rect.set_draw_mode(rectangle_renderer::draw_mode::LOWER_HALF);
 					}
-					rect.draw_fullscreen(ctx, tex_id);
+					rect.draw_fullscreen(ctx, tex_id);*/
 					
 					rendered_kit_ptr->disable_fbo(rendered_eye);
 				}
@@ -650,6 +730,14 @@ void vr_view_interactor::create_gui()
 		end_tree_node(event_flags);
 	}
 	stereo_view_interactor::create_gui();
+
+	if (begin_tree_node("camera", show_camera_seethrough, true, "level=2")) {
+		align("\a");
+		connect_copy(add_button("Start | Stop")->click,
+			cgv::signal::rebind(this, &vr_view_interactor::toogle_camera_seethrough));
+		align("\n\b");
+		end_tree_node(event_flags);
+	}
 }
 
 /// you must overload this for gui creation

@@ -68,155 +68,21 @@ namespace vr {
 		return deadzone_and_precision;
 	}
 
-	bool openvr_kit::init_cam()
-	{
-		m_pVRTrackedCamera = nullptr;
-		m_hTrackedCamera = INVALID_TRACKED_CAMERA_HANDLE;
-
-		m_nCameraFrameWidth = 0;
-		m_nCameraFrameHeight = 0;
-		m_nCameraFrameBufferSize = 0;
-		m_pCameraFrameBuffer = nullptr;
-
-		m_pVRTrackedCamera = vr::VRTrackedCamera();
-
-		if (!m_pVRTrackedCamera) {
-			std::cerr << "camera could not be initialized!" << std::endl;
-			return false;
-		}
-
-		bool bHasCamera = false;
-		vr::EVRTrackedCameraError nCameraError =
-			m_pVRTrackedCamera->HasCamera(vr::k_unTrackedDeviceIndex_Hmd, &bHasCamera);
-		if (nCameraError != vr::VRTrackedCameraError_None || !bHasCamera) {
-			std::cerr << "No Tracked Camera Available! (%s) "
-				<< m_pVRTrackedCamera->GetCameraErrorNameFromEnum(nCameraError)
-				<< std::endl;
-			return false;
-		}
-
-		/*Accessing the FW description is just a further check to ensure camera
-		communication is valid as expected.*/
-		vr::ETrackedPropertyError propertyError;
-		char buffer[128];
-		get_hmd()->GetStringTrackedDeviceProperty(
-			vr::k_unTrackedDeviceIndex_Hmd, vr::Prop_CameraFirmwareDescription_String,
-			buffer, sizeof(buffer), &propertyError);
-		if (propertyError != vr::TrackedProp_Success) {
-			std::cerr << "Failed to get tracked camera firmware description!\n" <<
-				std::endl; 	return false;
-		}
-
-		return true;
-	}
-
-	bool openvr_kit::start_cam()
-	{
-		// Allocate for camera frame buffer requirements
-		uint32_t nCameraFrameBufferSize = 0;
-		if (m_pVRTrackedCamera->GetCameraFrameSize(vr::k_unTrackedDeviceIndex_Hmd, vr::VRTrackedCameraFrameType_Distorted, &m_nCameraFrameWidth, &m_nCameraFrameHeight, &nCameraFrameBufferSize) != vr::VRTrackedCameraError_None)
-		{
-			std::cerr << "GetCameraFrameBounds() Failed!" << std::endl;
-			return false;
-		}
-
-		if (nCameraFrameBufferSize && nCameraFrameBufferSize != m_nCameraFrameBufferSize)
-		{
-			delete[] m_pCameraFrameBuffer;
-			m_nCameraFrameBufferSize = nCameraFrameBufferSize;
-			m_pCameraFrameBuffer = new uint8_t[m_nCameraFrameBufferSize];
-			memset(m_pCameraFrameBuffer, 0, m_nCameraFrameBufferSize);
-		}
-
-		m_nLastFrameSequence = 0;
-
-		m_pVRTrackedCamera->AcquireVideoStreamingService(vr::k_unTrackedDeviceIndex_Hmd, &m_hTrackedCamera);
-		if (m_hTrackedCamera == INVALID_TRACKED_CAMERA_HANDLE)
-		{
-			std::cerr << "AcquireVideoStreamingService() Failed!" << std::endl;
-			return false;
-		}
-
-		vr::HmdVector2_t focal_length, p_center;
-		auto e = m_pVRTrackedCamera->GetCameraIntrinsics(vr::k_unTrackedDeviceIndex_Hmd, 0,
-			vr::VRTrackedCameraFrameType_Undistorted, &focal_length, &p_center);
-
-		return true;
-	}
-
-	bool openvr_kit::stop_cam()
-	{
-		m_pVRTrackedCamera->ReleaseVideoStreamingService(m_hTrackedCamera);
-		m_hTrackedCamera = INVALID_TRACKED_CAMERA_HANDLE;
-
-		return true;
-	}
-
-	uint32_t openvr_kit::refresh_cam()
-	{
-		if (!m_pVRTrackedCamera || !m_hTrackedCamera)
-			return 0;
-
-		// TODO: timeout 2s
-		if (false)
-		{
-			std::cerr << "No Video Frames Arriving!" << std::endl;
-		}
-
-		// get the frame header only
-		vr::CameraVideoStreamFrameHeader_t frameHeader;
-		vr::EVRTrackedCameraError nCameraError = m_pVRTrackedCamera->GetVideoStreamFrameBuffer(m_hTrackedCamera, vr::VRTrackedCameraFrameType_Undistorted, nullptr, 0, &frameHeader, sizeof(frameHeader));
-		if (nCameraError != vr::VRTrackedCameraError_None)
-			return 0;
-
-		if (frameHeader.nFrameSequence == m_nLastFrameSequence)
-		{
-			// frame hasn't changed yet, nothing to do
-			return 0;
-		}
-
-		//{
-		//	// Frame has changed, do the more expensive frame buffer copy
-		//	nCameraError = m_pVRTrackedCamera->GetVideoStreamFrameBuffer(m_hTrackedCamera, vr::VRTrackedCameraFrameType_Undistorted, m_pCameraFrameBuffer, m_nCameraFrameBufferSize, &frameHeader, sizeof(frameHeader));
-		//	if (nCameraError != vr::VRTrackedCameraError_None)
-		//		return;
-
-		//	m_nLastFrameSequence = frameHeader.nFrameSequence;
-		//	m_CurrentFrameHeader = frameHeader;
-
-		//	if (m_pCameraFrameBuffer && m_nCameraFrameWidth && m_nCameraFrameHeight)
-		//	{
-		//		raw.resize(m_nCameraFrameWidth * m_nCameraFrameHeight);
-		//		memcpy(raw.data(), m_pCameraFrameBuffer, m_nCameraFrameWidth * m_nCameraFrameHeight * sizeof(rgba8));
-		//	}
-		//}
-
-		glUInt_t tex;
-		nCameraError = m_pVRTrackedCamera->GetVideoStreamTextureGL(m_hTrackedCamera, vr::VRTrackedCameraFrameType_Undistorted, &tex, &frameHeader, sizeof(frameHeader));
-		if (nCameraError != vr::VRTrackedCameraError_None)
-			return 0;
-
-		m_nLastFrameSequence = frameHeader.nFrameSequence;
-		m_CurrentFrameHeader = frameHeader;
-
-		int debug = 0;
-
-		return tex;
-	}
-
 	/// construct
 	openvr_kit::openvr_kit(unsigned _width, unsigned _height,
 		vr_driver* _driver, vr::IVRSystem* _hmd,
 		const std::string& _name, bool _ffb_support, bool _wireless)
 		: gl_vr_display(_width, _height, _driver, _hmd, _name, _ffb_support, _wireless)
 	{
-		init_cam();
+		openvr_camera = new vr::openvr_camera(_hmd);
+		camera = openvr_camera;
 	}
 
 	/// declare virtual destructor
 	openvr_kit::~openvr_kit()
 	{
-
+		delete openvr_camera;
+		camera = nullptr;
 	}
 
 	void extract_controller_state(const VRControllerState_t& input, vr_controller_state& output)
