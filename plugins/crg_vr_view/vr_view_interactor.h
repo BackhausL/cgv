@@ -112,6 +112,13 @@ protected:
 	cgv::render::texture left_eye_camera_texture;
 	cgv::render::texture right_eye_camera_texture;
 
+	// camera texture manipulation
+	float camera_texture_zoom_x;
+	float camera_texture_zoom_y;
+	float camera_texture_offset_x;
+	float camera_texture_offset_y;
+	float camera_eye_offset_x;
+
 	//
 	void configure_kits();
 	///
@@ -162,6 +169,10 @@ public:
 	void set_blit_vr_view_width(int width);
 	/// toogle camera seethrough
 	void toogle_camera_seethrough();
+	/// handle camera zoom slider
+	void camera_texture_zoom_changed();
+	/// handle camera offset slider
+	void camera_texture_offset_changed();
 	//@}
 	/// 
 	void on_set(void* member_ptr);

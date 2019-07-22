@@ -29,6 +29,9 @@ namespace cgv {
 			bool mode_changed = false;
 			bool flipped = false;
 
+			vec2 zoom = vec2(0.0f,0.0f);
+			vec2 offset = vec2(0.0f, 0.0f);
+
 			// does not own texture
 			std::shared_ptr<texture> tex;
 
@@ -76,6 +79,12 @@ namespace cgv {
 
 			rectangle get_rectangle() const;
 			void set_rectangle(const rectangle &rectangle);
+
+			vec2 get_zoom() const;
+			void set_zoom(const vec2 zoom);
+
+			vec2 get_offset() const;
+			void set_offset(const vec2 offset);
 
 		private:
 			void draw_impl(context &ctx, const rectangle &rectangle, texture &texture);

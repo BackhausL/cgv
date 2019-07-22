@@ -24,6 +24,8 @@ namespace cgv {
 
 			prog.set_uniform(ctx, "draw_mode", 0);
 			prog.set_uniform(ctx, "tex", 0);
+			prog.set_uniform(ctx, "zoom", zoom);
+			prog.set_uniform(ctx, "offset", offset);
 
 			std::vector<vec3> v = { rect[0], rect[1], rect[2], rect[3] };
 			v_buf.create(ctx, v.data(), v.size());
@@ -62,8 +64,6 @@ namespace cgv {
 		void rectangle_renderer::draw_fullscreen(context &ctx, texture &texture) {
 			draw_fullscreen_impl(ctx, texture);
 		}
-
-
 
 		void rectangle_renderer::draw_impl(context &ctx, const rectangle &rectangle,
 			texture &texture) {
@@ -214,11 +214,28 @@ namespace cgv {
 			mode_changed = true;
 		}
 
+
+		vec2 rectangle_renderer::get_zoom() const { return zoom; }
+
+		void rectangle_renderer::set_zoom(const vec2 zoom) {
+			this->zoom = zoom;
+			mode_changed = true;
+		}
+
+		vec2 rectangle_renderer::get_offset() const { return offset; }
+
+		void rectangle_renderer::set_offset(const vec2 offset) {
+			this->offset = offset;
+			mode_changed = true;
+		}
+
 		void rectangle_renderer::set_draw_mode_uniforms(context & ctx)
 		{
 			if (!prog.is_created()) return;
 
 			prog.set_uniform(ctx, "flipped", flipped);
+			prog.set_uniform(ctx, "zoom", zoom);
+			prog.set_uniform(ctx, "offset", offset);
 
 			switch (mode) {
 			case draw_mode::NORMAL: {
@@ -245,7 +262,6 @@ namespace cgv {
 
 		}
 
-
 		std::shared_ptr<texture> rectangle_renderer::get_texture() const { return tex; }
 
 		void rectangle_renderer::set_texture(std::shared_ptr<texture> t) { tex = t; }
@@ -255,6 +271,8 @@ namespace cgv {
 		void rectangle_renderer::set_rectangle(const rectangle &rectangle) {
 			rect = rectangle;
 		}
+
+
 
 	} // namespace render
 } // namespace cgv

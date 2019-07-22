@@ -32,7 +32,9 @@ private:
   vr::IVRTrackedCamera *tracked_camera;
   vr::TrackedCameraHandle_t tracked_camera_handle;
   uint32_t last_frame_sequence;
+  uint32_t framebuffer_size;
   vr::CameraVideoStreamFrameHeader_t current_frame_header;
+  vr::EVRTrackedCameraFrameType distortion_type;
 
   bool initialize_impl();
   bool start_impl();

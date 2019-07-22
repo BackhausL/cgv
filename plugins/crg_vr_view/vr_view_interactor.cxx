@@ -46,6 +46,11 @@ fence_color1(0, 0, 1), fence_color2(1, 1, 0)
 	"uint8[R,G,B,A]", TF_LINEAR, TF_LINEAR, TW_CLAMP_TO_EDGE, TW_CLAMP_TO_EDGE);
 	right_eye_camera_texture = texture(
 		"uint8[R,G,B,A]", TF_LINEAR, TF_LINEAR, TW_CLAMP_TO_EDGE, TW_CLAMP_TO_EDGE);
+	camera_texture_zoom_x = 0.0f;
+	camera_texture_zoom_y = 0.0f;
+	camera_texture_offset_x = 0.0f;
+	camera_texture_offset_y = 0.0f;
+	camera_eye_offset_x = 0.0f;
 
 	cgv::signal::connect(cgv::gui::ref_vr_server().on_device_change, this, &vr_view_interactor::on_device_change);
 	cgv::signal::connect(cgv::gui::ref_vr_server().on_status_change, this, &vr_view_interactor::on_status_change);
@@ -167,6 +172,18 @@ std::string vr_view_interactor::get_type_name() const
 {
 	return "vr_view_interactor";
 }
+
+
+void vr_view_interactor::camera_texture_zoom_changed()
+{
+	rect.set_zoom({ camera_texture_zoom_x, camera_texture_zoom_y });
+}
+
+void vr_view_interactor::camera_texture_offset_changed()
+{
+	rect.set_offset({ camera_texture_offset_x, camera_texture_offset_y });
+}
+
 /// 
 void vr_view_interactor::on_set(void* member_ptr)
 {
@@ -441,7 +458,8 @@ void vr_view_interactor::init_frame(cgv::render::context& ctx)
 			rendered_kit_index = current_vr_handle_index - 1;
 			rendered_kit_ptr = vr::get_vr_kit(kits[rendered_kit_index]);
 			if (rendered_kit_ptr) {
-				if (rendered_kit_ptr->has_camera()) {
+				if (rendered_kit_ptr->has_camera() && 
+					rendered_kit_ptr->get_camera()->get_state() == vr::camera_state::STARTED) {
 					auto cam = rendered_kit_ptr->get_camera();
 					auto qv = cam->query();
 
@@ -496,7 +514,7 @@ void vr_view_interactor::init_frame(cgv::render::context& ctx)
 								left_eye_camera_texture.create(ctx, dv);
 
 								auto data_ptr = cam->get_frame_ref().data() +
-									static_cast<int>(cam->get_frame_width() * (cam->get_frame_height() / 2));
+									static_cast<int>(cam->get_frame_width() * (cam->get_frame_height() / 2) * 4);
 								dv = data_view(&df2, data_ptr);
 								right_eye_camera_texture.create(ctx, dv);
 
@@ -516,14 +534,24 @@ void vr_view_interactor::init_frame(cgv::render::context& ctx)
 						break;
 					ctx.render_pass(cgv::render::RP_USER_DEFINED, cgv::render::RenderPassFlags(rpf&~cgv::render::RPF_HANDLE_SCREEN_SHOT));
 					
-					/*rect.set_flipped(true);
-					if (rendered_eye == 0) {
-						rect.set_draw_mode(rectangle_renderer::draw_mode::UPPER_HALF);
+					if (rendered_kit_ptr->has_camera() &&
+						rendered_kit_ptr->get_camera()->get_state() == vr::camera_state::STARTED) {
+						rect.set_flipped(true);
+						rect.set_draw_mode(rectangle_renderer::draw_mode::NORMAL);
+
+						vec2 old_offset = rect.get_offset();
+
+						if (rendered_eye == 0) {
+							rect.set_offset(old_offset + vec2(camera_eye_offset_x, 0.0f));
+							rect.draw_fullscreen(ctx, left_eye_camera_texture);
+						}
+						else if (rendered_eye == 1) {
+							rect.set_offset(old_offset - vec2(camera_eye_offset_x, 0.0f));
+							rect.draw_fullscreen(ctx, right_eye_camera_texture);
+						}
+						rect.set_offset(old_offset);
+						
 					}
-					else if (rendered_eye == 1) {
-						rect.set_draw_mode(rectangle_renderer::draw_mode::LOWER_HALF);
-					}
-					rect.draw_fullscreen(ctx, tex_id);*/
 					
 					rendered_kit_ptr->disable_fbo(rendered_eye);
 				}
@@ -731,10 +759,28 @@ void vr_view_interactor::create_gui()
 	}
 	stereo_view_interactor::create_gui();
 
-	if (begin_tree_node("camera", show_camera_seethrough, true, "level=2")) {
+	if (begin_tree_node("Camera", show_camera_seethrough, true, "level=2")) {
 		align("\a");
 		connect_copy(add_button("Start | Stop")->click,
 			cgv::signal::rebind(this, &vr_view_interactor::toogle_camera_seethrough));
+		connect_copy(add_control("zoom x", camera_texture_zoom_x, "value_slider",
+			"min=0.0;max=0.5;ticks=true")
+			->value_change,
+			rebind(this, &vr_view_interactor::camera_texture_zoom_changed));
+		connect_copy(add_control("zoom y", camera_texture_zoom_y, "value_slider",
+			"min=0.0;max=0.5;ticks=true")
+			->value_change,
+			rebind(this, &vr_view_interactor::camera_texture_zoom_changed));
+		connect_copy(add_control("offset x", camera_texture_offset_x, "value_slider",
+			"min=-0.5;max=0.5;ticks=true")
+			->value_change,
+			rebind(this, &vr_view_interactor::camera_texture_offset_changed));
+		connect_copy(add_control("offset y", camera_texture_offset_y, "value_slider",
+			"min=-0.5;max=0.5;ticks=true")
+			->value_change,
+			rebind(this, &vr_view_interactor::camera_texture_offset_changed));
+		add_member_control(this, "eye offset x", camera_eye_offset_x, "value_slider",
+			"min=-0.5;max=0.5;ticks=true");
 		align("\n\b");
 		end_tree_node(event_flags);
 	}

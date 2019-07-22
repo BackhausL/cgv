@@ -5,7 +5,7 @@
 
 namespace vr {
 vr_camera::vr_camera()
-    : num_cameras(0u), frame_width(0u), frame_height(0u),
+    : num_cameras(0u), frame_width(0u), frame_height(0u), state(camera_state::UNINITIALIZED),
       frame_format(camera_frame_format::RGBA), frame_split(camera_frame_split::NONE), new_frame_available(false) {}
 
 bool vr_camera::initialize() {
