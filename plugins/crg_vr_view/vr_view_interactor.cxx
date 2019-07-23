@@ -50,7 +50,10 @@ fence_color1(0, 0, 1), fence_color2(1, 1, 0)
 	camera_texture_zoom_y = 0.0f;
 	camera_texture_offset_x = 0.0f;
 	camera_texture_offset_y = 0.0f;
-	camera_eye_offset_x = 0.0f;
+	camera_left_eye_offset_x = 0.0f;
+	camera_left_eye_offset_y = 0.0f;
+	camera_right_eye_offset_x = 0.0f;
+	camera_right_eye_offset_y = 0.0f;
 
 	cgv::signal::connect(cgv::gui::ref_vr_server().on_device_change, this, &vr_view_interactor::on_device_change);
 	cgv::signal::connect(cgv::gui::ref_vr_server().on_status_change, this, &vr_view_interactor::on_status_change);
@@ -542,11 +545,13 @@ void vr_view_interactor::init_frame(cgv::render::context& ctx)
 						vec2 old_offset = rect.get_offset();
 
 						if (rendered_eye == 0) {
-							rect.set_offset(old_offset + vec2(camera_eye_offset_x, 0.0f));
+							rect.set_offset(old_offset + vec2(camera_left_eye_offset_x,
+								camera_left_eye_offset_y));
 							rect.draw_fullscreen(ctx, left_eye_camera_texture);
 						}
 						else if (rendered_eye == 1) {
-							rect.set_offset(old_offset - vec2(camera_eye_offset_x, 0.0f));
+							rect.set_offset(old_offset - vec2(camera_right_eye_offset_x,
+								camera_right_eye_offset_y));
 							rect.draw_fullscreen(ctx, right_eye_camera_texture);
 						}
 						rect.set_offset(old_offset);
@@ -779,8 +784,15 @@ void vr_view_interactor::create_gui()
 			"min=-0.5;max=0.5;ticks=true")
 			->value_change,
 			rebind(this, &vr_view_interactor::camera_texture_offset_changed));
-		add_member_control(this, "eye offset x", camera_eye_offset_x, "value_slider",
+		add_member_control(this, "left eye offset x", camera_left_eye_offset_x, "value_slider",
 			"min=-0.5;max=0.5;ticks=true");
+		add_member_control(this, "left eye offset y", camera_left_eye_offset_y, "value_slider",
+			"min=-0.5;max=0.5;ticks=true");
+		add_member_control(this, "right eye offset x", camera_right_eye_offset_x, "value_slider",
+			"min=-0.5;max=0.5;ticks=true");
+		add_member_control(this, "right eye offset y", camera_right_eye_offset_y, "value_slider",
+			"min=-0.5;max=0.5;ticks=true");
+
 		align("\n\b");
 		end_tree_node(event_flags);
 	}

@@ -23,8 +23,6 @@ public:
   openvr_camera(vr::IVRSystem *hmd);
   virtual ~openvr_camera();
 
-  bool query();
-
 protected:
   vr::IVRSystem *hmd;
 
@@ -36,11 +34,10 @@ private:
   vr::CameraVideoStreamFrameHeader_t current_frame_header;
   vr::EVRTrackedCameraFrameType distortion_type;
 
-  bool initialize_impl();
-  bool start_impl();
-  bool stop_impl();
-
-  float query_rate;
+  bool initialize_impl() override;
+  bool start_impl() override;
+  bool stop_impl() override;
+  bool query_impl() override;
 };
 
 } // namespace vr

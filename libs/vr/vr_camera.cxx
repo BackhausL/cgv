@@ -5,8 +5,10 @@
 
 namespace vr {
 vr_camera::vr_camera()
-    : num_cameras(0u), frame_width(0u), frame_height(0u), state(camera_state::UNINITIALIZED),
-      frame_format(camera_frame_format::RGBA), frame_split(camera_frame_split::NONE), new_frame_available(false) {}
+    : num_cameras(0u), frame_width(0u), frame_height(0u), query_limit(60.0f), state(camera_state::UNINITIALIZED),
+      frame_format(camera_frame_format::RGBA), frame_split(camera_frame_split::NONE), new_frame_available(false) {
+	last_query_timepoint = std::chrono::high_resolution_clock::now();
+}
 
 bool vr_camera::initialize() {
   // possible in error state, as it might be temporary
@@ -66,7 +68,35 @@ bool vr_camera::stop() {
   }
 }
 
+bool vr_camera::query()
+{
+	auto since =
+		std::chrono::duration_cast<std::chrono::duration<float>>(
+		(std::chrono::high_resolution_clock::now() - last_query_timepoint))
+		.count();
+
+	if (since > 1.0f / query_limit) {
+		auto b = query_impl();
+		last_query_timepoint = std::chrono::high_resolution_clock::now();
+		return b;
+	}
+	else {
+		last_query_timepoint = std::chrono::high_resolution_clock::now();
+		return false;
+	}
+}
+
 bool vr_camera::is_new_frame_available() const { return new_frame_available; }
+
+float vr_camera::get_query_limit() const
+{
+	return query_limit;
+}
+
+void vr_camera::set_query_limit(float fps)
+{
+	query_limit = fps;
+}
 
 std::vector<unsigned char> vr_camera::get_frame() const { return frame; }
 

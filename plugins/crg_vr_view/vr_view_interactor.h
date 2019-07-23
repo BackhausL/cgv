@@ -117,7 +117,10 @@ protected:
 	float camera_texture_zoom_y;
 	float camera_texture_offset_x;
 	float camera_texture_offset_y;
-	float camera_eye_offset_x;
+	float camera_left_eye_offset_x;
+	float camera_left_eye_offset_y;
+	float camera_right_eye_offset_x;
+	float camera_right_eye_offset_y;
 
 	//
 	void configure_kits();

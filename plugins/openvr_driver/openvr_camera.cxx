@@ -6,11 +6,11 @@
 namespace vr {
 	openvr_camera::openvr_camera(vr::IVRSystem *hmd)
 		: hmd(hmd), tracked_camera(nullptr),
-		tracked_camera_handle(INVALID_TRACKED_CAMERA_HANDLE), framebuffer_size(0u), query_rate(60.0f) {
+		tracked_camera_handle(INVALID_TRACKED_CAMERA_HANDLE), framebuffer_size(0u) {
 		frame_format = camera_frame_format::RGBA;
 		frame_split = camera_frame_split::UP_DOWN;
 
-		distortion_type = EVRTrackedCameraFrameType::VRTrackedCameraFrameType_Distorted;
+		distortion_type = EVRTrackedCameraFrameType::VRTrackedCameraFrameType_MaximumUndistorted;
 	}
 
 	openvr_camera::~openvr_camera() {}
@@ -103,7 +103,7 @@ namespace vr {
 		return true;
 	}
 
-	bool openvr_camera::query() {
+	bool openvr_camera::query_impl() {
 		if (!tracked_camera || !tracked_camera_handle ||
 			get_state() != camera_state::STARTED)
 			return false;

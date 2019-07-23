@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <chrono>
 
 #include "lib_begin.h"
 
@@ -34,8 +35,11 @@ public:
 
   /// query camera for next frame
   /// implementations shall set new_frame_available & frame data
-  virtual bool query() = 0;
+  bool query();
   bool is_new_frame_available() const;
+
+  float get_query_limit() const;
+  void set_query_limit(float fps);
 
   /// get raw frame, format described by get_frame_format()
   std::vector<unsigned char> get_frame() const;
@@ -47,6 +51,7 @@ public:
 
   camera_state get_state() const;
   uint8_t get_num_cameras() const;
+
 
 protected:
   uint8_t num_cameras;
@@ -60,10 +65,14 @@ protected:
 
 private:
   camera_state state;
+  float query_limit;
+  std::chrono::high_resolution_clock::time_point last_query_timepoint;
 
   virtual bool initialize_impl() = 0;
   virtual bool start_impl() = 0;
   virtual bool stop_impl() = 0;
+
+  virtual bool query_impl() = 0;
 };
 
 } // namespace vr
