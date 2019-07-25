@@ -1,0 +1,11 @@
+@=
+exclude<cgv/config/make.ppp>;
+projectName="mbedtls";
+projectType="library";
+projectGUID="102ae197-0199-463d-b08d-a7739aa59f2d";
+addIncDirs=[CGV_DIR."/3rd/zlib", CGV_DIR."/3rd/mbedtls/include"];
+addProjectDirs=[CGV_DIR."/3rd/zlib"];
+addProjectDeps=["zlib"];
+sourceDirs=[CGV_DIR."/3rd/mbedtls/library"];
+addSharedDefines=["MBEDTLS_DLL"];
+addStaticDefines=["MBEDTLS_STATIC"];

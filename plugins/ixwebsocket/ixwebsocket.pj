@@ -1,0 +1,30 @@
+@=
+projectName="ixwebsocket";
+projectType="plugin";
+projectGUID="14d3da91-6c7c-4d2e-9833-adbed77b9c82";
+addIncDirs=[CGV_DIR."/3rd/zlib", CGV_DIR."/3rd/mbedtls/include", CGV_DIR."/plugins/ixwebsocket/ixwebsocket"];
+sourceDirs=[CGV_DIR."/plugins/ixwebsocket/ixwebsocket/ixwebsocket"];
+addProjectDirs=[CGV_DIR."/3rd/zlib", CGV_DIR."/3rd/mbedtls"];
+addProjectDeps=["zlib", "mbedtls"];
+
+if (SYSTEM=="windows") {
+	addSharedDefines=["IXWEBSOCKET_EXPORTS", "USE_MBED_TLS"];
+
+	excludeSourceDirs=[CGV_DIR."/plugins/ixwebsocket/ixwebsocket/ixwebsocket/apple",
+		CGV_DIR."/plugins/ixwebsocket/ixwebsocket/ixwebsocket/linux"];
+	excludeSourceFiles=[
+		CGV_DIR."/plugins/ixwebsocket/ixwebsocket/ixwebsocket/IXSelectInterruptPipe.cpp",
+		CGV_DIR."/plugins/ixwebsocket/ixwebsocket/ixwebsocket/IXSelectInterruptPipe.h",
+		CGV_DIR."/plugins/ixwebsocket/ixwebsocket/ixwebsocket/IXSelectInterruptEventFd.cpp",
+		CGV_DIR."/plugins/ixwebsocket/ixwebsocket/ixwebsocket/IXSelectInterruptEventFd.h",
+		CGV_DIR."/plugins/ixwebsocket/ixwebsocket/ixwebsocket/IXSocketAppleSSL.cpp",
+		CGV_DIR."/plugins/ixwebsocket/ixwebsocket/ixwebsocket/IXSocketAppleSSL.h",
+		CGV_DIR."/plugins/ixwebsocket/ixwebsocket/ixwebsocket/IXSocketSChannel.cpp",
+		CGV_DIR."/plugins/ixwebsocket/ixwebsocket/ixwebsocket/IXSocketSChannel.h",
+		CGV_DIR."/plugins/ixwebsocket/ixwebsocket/ixwebsocket/IXSocketOpenSSL.cpp",
+		CGV_DIR."/plugins/ixwebsocket/ixwebsocket/ixwebsocket/IXSocketOpenSSL.h"
+		];
+}
+if(SYSTEM=="linux") {
+	addSharedDefines=["IXWEBSOCKET_EXPORTS"];
+}
