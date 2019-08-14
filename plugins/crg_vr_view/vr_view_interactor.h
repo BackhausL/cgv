@@ -176,6 +176,8 @@ public:
 	void camera_texture_zoom_changed();
 	/// handle camera offset slider
 	void camera_texture_offset_changed();
+	/// set offset for camera manually, left-and-right eye for fine tuning
+	void set_camera_texture_offsets(vec2 zoom, vec2 offset_both_eyes, vec2 offset_left_eye, vec2 offset_right_eye);
 	//@}
 	/// 
 	void on_set(void* member_ptr);

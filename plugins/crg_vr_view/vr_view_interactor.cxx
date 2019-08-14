@@ -187,6 +187,20 @@ void vr_view_interactor::camera_texture_offset_changed()
 	rect.set_offset({ camera_texture_offset_x, camera_texture_offset_y });
 }
 
+void vr_view_interactor::set_camera_texture_offsets(vec2 zoom, vec2 offset_both_eyes, vec2 offset_left_eye, vec2 offset_right_eye)
+{
+	camera_texture_zoom_x = zoom.x();
+	camera_texture_zoom_y = zoom.y();
+	camera_texture_offset_x = offset_both_eyes.x();
+	camera_texture_offset_y = offset_both_eyes.y();
+	camera_left_eye_offset_x = offset_left_eye.x();
+	camera_left_eye_offset_y = offset_left_eye.y();
+	camera_right_eye_offset_x = offset_right_eye.x();
+	camera_right_eye_offset_y = offset_right_eye.y();
+
+	update_all_members(); 
+}
+
 /// 
 void vr_view_interactor::on_set(void* member_ptr)
 {
@@ -513,7 +527,6 @@ void vr_view_interactor::init_frame(cgv::render::context& ctx)
 								// seems to only work on ref
 								// TODO: check this
 								auto dv = data_view(&df1, cam->get_frame_ref().data());
-								// calls replace if already created - TODO: check this
 								left_eye_camera_texture.create(ctx, dv);
 
 								auto data_ptr = cam->get_frame_ref().data() +
@@ -535,8 +548,7 @@ void vr_view_interactor::init_frame(cgv::render::context& ctx)
 
 					if (rendered_eye == 1 && !separate_view)
 						break;
-					ctx.render_pass(cgv::render::RP_USER_DEFINED, cgv::render::RenderPassFlags(rpf&~cgv::render::RPF_HANDLE_SCREEN_SHOT));
-					
+
 					if (rendered_kit_ptr->has_camera() &&
 						rendered_kit_ptr->get_camera()->get_state() == vr::camera_state::STARTED) {
 						rect.set_flipped(true);
@@ -555,9 +567,10 @@ void vr_view_interactor::init_frame(cgv::render::context& ctx)
 							rect.draw_fullscreen(ctx, right_eye_camera_texture);
 						}
 						rect.set_offset(old_offset);
-						
+
 					}
-					
+
+					ctx.render_pass(cgv::render::RP_USER_DEFINED, cgv::render::RenderPassFlags(rpf&~cgv::render::RPF_HANDLE_SCREEN_SHOT));
 					rendered_kit_ptr->disable_fbo(rendered_eye);
 				}
 			}
