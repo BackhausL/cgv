@@ -44,6 +44,8 @@ namespace cgv {
 			unsigned get_player_index() const { return player_index; }
 			/// return the state
 			const vr::vr_kit_state& get_state() const { return state; }
+			/// switch left and right hand input
+			void switch_left_and_right();
 			/// write to stream
 			void stream_out(std::ostream& os) const;
 			/// read from stream
@@ -66,6 +68,8 @@ namespace cgv {
 			void* get_device_handle() const { return device_handle; }
 			/// return the state
 			const vr::vr_kit_state& get_state() const { return state; }
+			/// switch left and right hand input
+			void switch_left_and_right();
 			/// write to stream
 			void stream_out(std::ostream& os) const;
 		};
@@ -87,6 +91,8 @@ namespace cgv {
 			void* get_device_handle() const { return device_handle; }
 			/// return the state
 			const vr::vr_kit_state& get_state() const { return state; }
+			/// switch left and right hand input
+			void switch_left_and_right();
 			/// write to stream
 			void stream_out(std::ostream& os) const;
 		};

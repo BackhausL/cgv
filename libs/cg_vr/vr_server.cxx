@@ -6,6 +6,10 @@
 #include <cgv/gui/trigger.h>
 #include <cassert>
 
+constexpr auto left_right_hand_key_offset =
+vr::VRKeys::VR_RIGHT_MENU - vr::VRKeys::VR_LEFT_MENU;
+constexpr auto right_hand_keys_start = vr::VRKeys::VR_RIGHT_MENU;
+
 namespace cgv {
 	namespace gui {
 		// some helper function to compare arrays
@@ -25,6 +29,17 @@ namespace cgv {
 		{
 			flags = EF_VR;
 		}
+		/// switch left and right hand input
+		void vr_key_event::switch_left_and_right() {
+			// left hand
+			if (key < right_hand_keys_start) {
+				key = key + left_right_hand_key_offset;
+			}
+			// right hand
+			else {
+				key = key - left_right_hand_key_offset;
+			}
+		};
 		/// write to stream
 		void vr_key_event::stream_out(std::ostream& os) const
 		{
@@ -62,6 +77,10 @@ namespace cgv {
 		{
 			flags = EF_VR;
 		}
+		/// switch left and right hand input
+		void vr_throttle_event::switch_left_and_right() {
+			controller_index = (controller_index + 1) % 2;
+		};
 		/// write to stream
 		void vr_throttle_event::stream_out(std::ostream& os) const
 		{
@@ -77,6 +96,10 @@ namespace cgv {
 		{
 			flags = EF_VR;
 		}
+		/// switch left and right hand input
+		void vr_stick_event::switch_left_and_right() {
+			controller_index = (controller_index + 1) % 2;
+		};
 		/// write to stream
 		void vr_stick_event::stream_out(std::ostream& os) const
 		{
