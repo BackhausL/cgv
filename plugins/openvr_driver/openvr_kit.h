@@ -2,7 +2,6 @@
 
 #include <vr/gl_vr_display.h>
 #include "openvr.h"
-#include "openvr_camera.h"
 
 #include <vector>
 
@@ -16,8 +15,6 @@ namespace vr {
 	{
 	protected:
 		vr::IVRSystem* get_hmd();
-		// convenience for not have to cast to proper type
-		openvr_camera* openvr_camera;
 
 	public:
 		/// construct

@@ -9,6 +9,7 @@ namespace vr {
 		tracked_camera_handle(INVALID_TRACKED_CAMERA_HANDLE), framebuffer_size(0u) {
 		frame_format = camera_frame_format::RGBA;
 		frame_split = camera_frame_split::UP_DOWN;
+		frame_flipped = true;
 
 		distortion_type = EVRTrackedCameraFrameType::VRTrackedCameraFrameType_MaximumUndistorted;
 	}

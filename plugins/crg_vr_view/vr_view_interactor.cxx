@@ -478,10 +478,11 @@ void vr_view_interactor::init_frame(cgv::render::context& ctx)
 				if (rendered_kit_ptr->has_camera() && 
 					rendered_kit_ptr->get_camera()->get_state() == vr::camera_state::STARTED) {
 					auto cam = rendered_kit_ptr->get_camera();
+					cam->lock_frame();
+
 					auto qv = cam->query();
 
 					if (cam->is_new_frame_available()) {
-						auto data = cam->get_frame();
 
 						auto num_cams = cam->get_num_cameras();
 						num_cams = 2; // TODO: implement 1 and remove
@@ -542,6 +543,8 @@ void vr_view_interactor::init_frame(cgv::render::context& ctx)
 							}
 						}
 					}
+
+					cam->unlock_frame();
 				}
 				for (rendered_eye = 0; rendered_eye < 2; ++rendered_eye) {
 					rendered_kit_ptr->enable_fbo(rendered_eye);
@@ -556,7 +559,7 @@ void vr_view_interactor::init_frame(cgv::render::context& ctx)
 
 					if (rendered_kit_ptr->has_camera() &&
 						rendered_kit_ptr->get_camera()->get_state() == vr::camera_state::STARTED) {
-						rect.set_flipped(true);
+						rect.set_flipped(rendered_kit_ptr->get_camera()->is_frame_flipped());
 						rect.set_draw_mode(rectangle_renderer::draw_mode::NORMAL);
 
 						vec2 old_offset = rect.get_offset();

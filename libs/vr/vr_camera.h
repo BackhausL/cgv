@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <chrono>
+#include <mutex>
 
 #include "lib_begin.h"
 
@@ -52,6 +53,12 @@ public:
   camera_state get_state() const;
   uint8_t get_num_cameras() const;
 
+  bool is_frame_flipped() const;
+
+  // no internal safety for these function
+  // when used, check for possible deadlocks
+  void lock_frame();
+  void unlock_frame();
 
 protected:
   uint8_t num_cameras;
@@ -62,6 +69,10 @@ protected:
   camera_frame_format frame_format;
   camera_frame_split frame_split;
   bool new_frame_available;
+  bool frame_flipped;
+
+  // only use in conjuction with lock() and unlock() if absolutely needed
+  std::mutex frame_mutex;
 
 private:
   camera_state state;

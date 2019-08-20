@@ -6,7 +6,7 @@
 namespace vr {
 vr_camera::vr_camera()
     : num_cameras(0u), frame_width(0u), frame_height(0u), query_limit(60.0f), state(camera_state::UNINITIALIZED),
-      frame_format(camera_frame_format::RGBA), frame_split(camera_frame_split::NONE), new_frame_available(false) {
+      frame_format(camera_frame_format::RGBA), frame_split(camera_frame_split::NONE), frame_flipped(false), new_frame_available(false) {
 	last_query_timepoint = std::chrono::high_resolution_clock::now();
 }
 
@@ -125,5 +125,20 @@ camera_frame_split vr_camera::get_frame_split() const
 camera_state vr_camera::get_state() const { return state; }
 
 uint8_t vr_camera::get_num_cameras() const { return num_cameras; }
+
+bool vr_camera::is_frame_flipped() const
+{
+	return frame_flipped;
+}
+
+void vr_camera::lock_frame()
+{
+	frame_mutex.lock();
+}
+
+void vr_camera::unlock_frame()
+{
+	frame_mutex.unlock();
+}
 
 } // namespace vr

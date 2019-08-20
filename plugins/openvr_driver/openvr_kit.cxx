@@ -1,6 +1,9 @@
 #include "openvr_kit.h"
 #include <iostream>
 
+#include "openvr_camera.h"
+#include "vivesr_camera.h"
+
 namespace vr {
 
 	void put_pose_matrix(const vr::HmdMatrix34_t& P, float* pose_matrix)
@@ -74,14 +77,14 @@ namespace vr {
 		const std::string& _name, bool _ffb_support, bool _wireless)
 		: gl_vr_display(_width, _height, _driver, _hmd, _name, _ffb_support, _wireless)
 	{
-		openvr_camera = new vr::openvr_camera(_hmd);
-		camera = openvr_camera;
+		//camera = new vr::openvr_camera(_hmd);
+		camera = new vr::vivesr_camera();
 	}
 
 	/// declare virtual destructor
 	openvr_kit::~openvr_kit()
 	{
-		delete openvr_camera;
+		delete camera;
 		camera = nullptr;
 	}
 

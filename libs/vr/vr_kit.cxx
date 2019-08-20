@@ -8,6 +8,9 @@ namespace vr {
 	/// declare virtual destructor
 	vr_kit::~vr_kit()
 	{
+		if (has_camera()) {
+			camera->stop();
+		}
 	}
 	/// return driver
 	const vr_driver* vr_kit::get_driver() const { return driver; }
