@@ -549,6 +549,11 @@ void vr_view_interactor::init_frame(cgv::render::context& ctx)
 					if (rendered_eye == 1 && !separate_view)
 						break;
 
+					glClear(GL_COLOR_BUFFER_BIT);
+					glClear(GL_DEPTH_BUFFER_BIT);
+
+					glDepthMask(false);
+
 					if (rendered_kit_ptr->has_camera() &&
 						rendered_kit_ptr->get_camera()->get_state() == vr::camera_state::STARTED) {
 						rect.set_flipped(true);
@@ -570,7 +575,17 @@ void vr_view_interactor::init_frame(cgv::render::context& ctx)
 
 					}
 
-					ctx.render_pass(cgv::render::RP_USER_DEFINED, cgv::render::RenderPassFlags(rpf&~cgv::render::RPF_HANDLE_SCREEN_SHOT));
+					glDepthMask(true);
+
+					ctx.render_pass(cgv::render::RP_USER_DEFINED,
+						cgv::render::RenderPassFlags(rpf &
+							~(
+							cgv::render::RPF_HANDLE_SCREEN_SHOT |
+							cgv::render::RPF_CLEAR_COLOR |
+							cgv::render::RPF_CLEAR_DEPTH
+							)
+						));
+					
 					rendered_kit_ptr->disable_fbo(rendered_eye);
 				}
 			}
