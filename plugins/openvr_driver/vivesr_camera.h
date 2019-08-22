@@ -34,8 +34,6 @@ namespace vr {
 
 		CameraParams camera_parameters;
 
-
-
 	private:
 		uint32_t last_frame_sequence;
 		uint32_t framebuffer_size;

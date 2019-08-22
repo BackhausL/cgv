@@ -74,7 +74,7 @@ namespace vr {
 			}
 
 			// TODO: check if needed
-			Sleep(1000);
+			//Sleep(1000);
 
 			ViveSR_GetCameraParams(&camera_parameters);
 
@@ -82,14 +82,14 @@ namespace vr {
 			ViveSR_SetParameterInt(id_seethrough, ViveSR::SeeThrough::Param::VR_INIT_TYPE, ViveSR::SeeThrough::InitType::SCENE);
 
 			if (distortion_type == distortion::UNDISTORTED) {
-				frame.resize(UNDISTORTED_IMAGE_H * UNDISTORTED_IMAGE_W * UNDISTORTED_IMAGE_C);
+				frame.resize(UNDISTORTED_IMAGE_W * UNDISTORTED_IMAGE_H * 2 * UNDISTORTED_IMAGE_C);
 				frame_width = UNDISTORTED_IMAGE_W;
-				frame_height = UNDISTORTED_IMAGE_H;
+				frame_height = UNDISTORTED_IMAGE_H * 2u; // !important: 2 Images
 			}
 			else if (distortion_type == distortion::DISTORTED) {
-				frame.resize(DISTORTED_IMAGE_H * DISTORTED_IMAGE_W * DISTORTED_IMAGE_C);
+				frame.resize(DISTORTED_IMAGE_W * DISTORTED_IMAGE_H * 2 * DISTORTED_IMAGE_C);
 				frame_width = DISTORTED_IMAGE_W;
-				frame_height = DISTORTED_IMAGE_H;
+				frame_height = DISTORTED_IMAGE_H * 2u; // !important: 2 Images
 			}
 
 			return true;
@@ -155,8 +155,8 @@ namespace vr {
 
 		auto cam = static_cast<vivesr_camera*>(current_cam);
 
-		auto half_image_size = current_cam->get_frame_width() *
-			(current_cam->get_frame_height() / 2) * 4;
+		auto half_image_size = 4 * current_cam->get_frame_width() *
+			(current_cam->get_frame_height() / 2);
 
 		auto data_ptr = current_cam->get_frame_ref().data();
 		auto data_ptr_l = data_ptr;

@@ -84,8 +84,11 @@ namespace vr {
 	/// declare virtual destructor
 	openvr_kit::~openvr_kit()
 	{
-		delete camera;
-		camera = nullptr;
+		if (has_camera()) {
+			camera->stop();
+			delete camera;
+			camera = nullptr;
+		}
 	}
 
 	void extract_controller_state(const VRControllerState_t& input, vr_controller_state& output)
