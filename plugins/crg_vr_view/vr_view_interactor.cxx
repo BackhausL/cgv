@@ -198,6 +198,10 @@ void vr_view_interactor::set_camera_texture_offsets(vec2 zoom, vec2 offset_both_
 	camera_right_eye_offset_x = offset_right_eye.x();
 	camera_right_eye_offset_y = offset_right_eye.y();
 
+	
+	camera_texture_zoom_changed();
+	camera_texture_offset_changed();
+
 	update_all_members(); 
 }
 

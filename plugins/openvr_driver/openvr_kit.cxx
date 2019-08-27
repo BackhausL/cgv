@@ -77,8 +77,8 @@ namespace vr {
 		const std::string& _name, bool _ffb_support, bool _wireless)
 		: gl_vr_display(_width, _height, _driver, _hmd, _name, _ffb_support, _wireless)
 	{
-		//camera = new vr::openvr_camera(_hmd);
-		camera = new vr::vivesr_camera();
+		camera = new vr::openvr_camera(_hmd);
+		//camera = new vr::vivesr_camera();
 	}
 
 	/// declare virtual destructor
