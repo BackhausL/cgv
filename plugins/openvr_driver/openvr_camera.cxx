@@ -11,6 +11,8 @@ namespace vr {
 		frame_split = camera_frame_split::UP_DOWN;
 		frame_flipped = true;
 
+		set_query_limit(999.0f);
+
 		distortion_type = EVRTrackedCameraFrameType::VRTrackedCameraFrameType_MaximumUndistorted;
 	}
 

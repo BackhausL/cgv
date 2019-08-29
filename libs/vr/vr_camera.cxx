@@ -75,8 +75,10 @@ bool vr_camera::query()
 		(std::chrono::high_resolution_clock::now() - last_query_timepoint))
 		.count();
 
+	auto b = query_impl();
+
 	if (since > 1.0f / query_limit) {
-		auto b = query_impl();
+		
 		last_query_timepoint = std::chrono::high_resolution_clock::now();
 		return b;
 	}
