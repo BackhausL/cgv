@@ -81,7 +81,6 @@ bool vr_camera::query()
 		return b;
 	}
 	else {
-		last_query_timepoint = std::chrono::high_resolution_clock::now();
 		return false;
 	}
 }
