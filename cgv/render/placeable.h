@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cgv/render/render_types_namespace.h>
+#include <cgv/math/ftransform.h>
 
 using namespace cgv::render::render_types_ns;
 
@@ -10,19 +11,34 @@ namespace cgv {
 namespace render {
 
 	class CGV_API placeable {
+	public:
+		enum class rotation_order : uint8_t {
+			XYZ,
+			XZY,
+			YXZ,
+			YZX,
+			ZXY,
+			ZYX // blender, glm
+		};
 	  private:
-		vec3 position;
-		vec3 pitch_yaw_roll;
-		vec3 scale;
-		mat4 model_matrix;
+		vec3 position = vec3(0.0f);
+		vec3 rotation = vec3(0.0f);
+		vec3 scale = vec3(1.0f);
+		mat4 model_matrix = cgv::math::identity4<float>();
+
+		vec3 forward = vec3(0.0f, 0.0f,1.0f);
+		vec3 right = vec3(1.0f, 0.0f, 0.0f);
+		vec3 up = vec3(0.0f, 1.0f, 0.0f);
+
+		rotation_order rot_order = rotation_order::ZYX;
 
 		void calculate_model_matrix();
 
 	  public:
 		placeable();
 		placeable(const vec3 &position);
-		placeable(const vec3 &position, const vec3 &pitch_yaw_roll);
-		placeable(const vec3 &position, const vec3 &pitch_yaw_roll, const vec3 &scale);
+		placeable(const vec3 &position, const vec3 &otation);
+		placeable(const vec3 &position, const vec3 &rotation, const vec3 &scale);
 
 		vec3 get_position() const;
 		void set_position(const vec3 &position);
@@ -30,11 +46,11 @@ namespace render {
 		void set_position_y(const float y);
 		void set_position_z(const float z);
 
-		vec3 get_pitch_yaw_roll() const;
-		void set_pitch_yaw_roll(const vec3 &pyr);
-		void set_pitch(const float pitch);
-		void set_yaw(const float yaw);
-		void set_roll(const float roll);
+		vec3 get_rotation() const;
+		void set_rotation(const vec3 &xyz);
+		void set_rotation_x(const float x);
+		void set_rotation_y(const float y);
+		void set_rotation_z(const float z);
 
 		vec3 get_scale();
 		void set_scale(const vec3 &scale);
@@ -44,6 +60,8 @@ namespace render {
 
 		mat4 get_model_matrix() const;
 		void set_model_matrix(const mat4 &model_matrix);
+
+		void set_rotation_order(rotation_order order);
 	};
 
 } // namespace render
